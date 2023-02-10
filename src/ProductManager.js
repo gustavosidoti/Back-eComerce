@@ -160,11 +160,10 @@ pm.getProducts().then(read => {
 setTimeout(() => {
     pm.getProducts().then(read => console.log(read));
     pm.getProductById(1);
-    pm.addProduct(Product2);
 }, 3000);
 
 setTimeout(() => {
-    pm.updateProduct( 2, "title", "Zapatillas" ).then(read => console.log(read));
+    pm.updateProduct( 2, "name", "Zapatillas" ).then(read => console.log(read));
 }, 4000);
 
 setTimeout(() => {
