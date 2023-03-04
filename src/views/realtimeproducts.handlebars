@@ -1,0 +1,22 @@
+<h2>Products in stock with websockets</h2>
+
+
+
+<div id="mensajeDeActualizacion"></div>
+
+
+<ul>
+    <div id="actualizador">
+        {{#each products}}
+        <li>
+            <b> {{title}}</b>
+            <br>
+            Precio: {{price}}
+            <br>
+            Stock: {{stock}}
+            <br>
+        </li>
+        {{/each}}
+    </div>
+</ul>
+

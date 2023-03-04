@@ -1,0 +1,18 @@
+<h2>Products in stock</h2>
+
+
+
+<table>
+        <thead>
+            <th>Title</th>
+            <th>stock</th>
+        </thead>
+    <tbody>
+            {{#each products}}
+                <tr>
+                    <td>{{title}}</td>
+                    <td>{{stock}}</td>
+                </tr>
+            {{/each}}
+    </tbody>
+</table>
