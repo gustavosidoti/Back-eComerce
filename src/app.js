@@ -25,8 +25,14 @@ app.use(express.urlencoded({extended:true}));
 app.use(express.static('./src/public/assets/js'));
 
 const realTimeRouter = require('./routes/realtimeproducts.router');
+const productsRouter = require('./routes/products.router');
+
 // Rutas
-app.use('/api/products', require('./routes/products.router'));
+app.use('/api/products', (req, res, next) => {
+    req.serverSocket = io;
+    next();
+}, productsRouter);
+
 app.use('/api/carts', require('./routes/carts.router'));
 //app.use('/api/realtimeproducts', require('./routes/realtimeproducts.router'));
 
@@ -46,7 +52,7 @@ const serverhttp=app.listen(PORT,()=>{
 const io = new Server(serverhttp);
 io.on('connection', (socket) => {
 
-    //console.log(socket.handshake);
+    console.log(socket.handshake);
 
     console.log(`Se han conectado ${socket.id}`);
 });

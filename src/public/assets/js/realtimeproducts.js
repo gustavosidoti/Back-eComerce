@@ -1,10 +1,10 @@
 let productMessage = document.querySelector('#mensajeDeActualizacion');
 let divActualizador = document.getElementById('actualizador')
-let socket = io();
+let socket = io.connect();
 
 socket.on('editProduct', async (products) => {
     console.log('Esto andaaaa!!!', products, products[0].title);
-    divActualizador.innerHTML = ''
+    await divActualizador.innerHTML = ''
     for (const product of products) {
         divActualizador.innerHTML += `
     <li>

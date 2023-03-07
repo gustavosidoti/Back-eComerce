@@ -160,5 +160,104 @@
           "category": "jersey",
           "thumnails": "www",
           "pid": "bdf6b3f6-bcd2-488b-b0ab-837e67b2cf53"
+     },
+     {
+          "title": "Camiseta Almagro",
+          "description": "Stadium talle m",
+          "code": "116",
+          "price": 14,
+          "status": true,
+          "stock": 25,
+          "category": "jersey",
+          "thumnails": "www",
+          "pid": "17145432-9a32-40de-9a85-c6d093a19f73"
+     },
+     {
+          "title": "Camiseta Banfield",
+          "description": "Stadium talle m",
+          "code": "116",
+          "price": 14,
+          "status": true,
+          "stock": 25,
+          "category": "jersey",
+          "thumnails": "www",
+          "pid": "93bc04cc-93d4-4e34-b040-b1f960865194"
+     },
+     {
+          "title": "Camiseta Maipu",
+          "description": "Stadium talle m",
+          "code": "116",
+          "price": 14,
+          "status": true,
+          "stock": 25,
+          "category": "jersey",
+          "thumnails": "www",
+          "pid": "50dfd5a3-1078-4c10-88e1-e6839f44783e"
+     },
+     {
+          "title": "Camiseta Ferro",
+          "description": "Stadium talle m",
+          "code": "116",
+          "price": 14,
+          "status": true,
+          "stock": 25,
+          "category": "jersey",
+          "thumnails": "www",
+          "pid": "47e6a974-2e86-49a7-ab91-d5944c827776"
+     },
+     {
+          "title": "Camiseta San",
+          "description": "Stadium talle m",
+          "code": "116",
+          "price": 14,
+          "status": true,
+          "stock": 25,
+          "category": "jersey",
+          "thumnails": "www",
+          "pid": "b69fd2f1-1b40-486d-bf33-0fab80c63997"
+     },
+     {
+          "title": "Camiseta Puma",
+          "description": "Stadium talle m",
+          "code": "116",
+          "price": 14,
+          "status": true,
+          "stock": 25,
+          "category": "jersey",
+          "thumnails": "www",
+          "pid": "b6cea161-8276-4698-a8c7-167824acddc9"
+     },
+     {
+          "title": "Camiseta Portugal",
+          "description": "Stadium talle m",
+          "code": "116",
+          "price": 14,
+          "status": true,
+          "stock": 25,
+          "category": "jersey",
+          "thumnails": "www",
+          "pid": "3da96b49-4927-472a-870c-cc2a18a747d3"
+     },
+     {
+          "title": "Camiseta Italia",
+          "description": "Stadium talle m",
+          "code": "116",
+          "price": 14,
+          "status": true,
+          "stock": 25,
+          "category": "jersey",
+          "thumnails": "www",
+          "pid": "40b9e7b1-bf4a-4d76-ab47-fce3aa111e67"
+     },
+     {
+          "title": "Camiseta Jordania",
+          "description": "Stadium talle m",
+          "code": "116",
+          "price": 14,
+          "status": true,
+          "stock": 25,
+          "category": "jersey",
+          "thumnails": "www",
+          "pid": "48534eaa-c557-4002-b6d3-cfcd0d68abf2"
      }
 ]
