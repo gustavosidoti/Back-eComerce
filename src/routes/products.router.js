@@ -14,6 +14,8 @@ path = libreriaPath.join(__dirname, '../Products.json');
 const productsOn = fs.readFileSync(path, 'utf8');
 const products = JSON.parse(productsOn);
 
+
+
 router.get('/', getProducts);
 
 router.get('/:pid', getProductByPid);
@@ -26,7 +28,7 @@ router.post('/', async(req, res) =>{
 
     let product = req.body;
     let io = req.serverSocket;
-    console.log(req.body);
+    
     if(!product.title || !product.description || !product.code || !product.price || !product.status
         || !product.stock || !product.category || !product.thumnails || product.pid){
         res.setHeader('Content-Type','application/json');
@@ -40,8 +42,11 @@ router.post('/', async(req, res) =>{
     products.push(product);
 
     await fs.promises.writeFile(path, JSON.stringify(products, null, 5));
-
-    io.emit('editProduct', products);
+    //console.log(products);
+    //io.broadcast.emit('editProduct',products)
+    io.emit('editProduct', {
+        products: products
+    });
    
     res.setHeader('Content-Type','application/json');
     res.status(201).json({

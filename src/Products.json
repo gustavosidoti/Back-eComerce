@@ -259,5 +259,104 @@
           "category": "jersey",
           "thumnails": "www",
           "pid": "48534eaa-c557-4002-b6d3-cfcd0d68abf2"
+     },
+     {
+          "title": "Camiseta Mexico",
+          "description": "Stadium talle m",
+          "code": "116",
+          "price": 14,
+          "status": true,
+          "stock": 25,
+          "category": "jersey",
+          "thumnails": "www",
+          "pid": "18bd7619-4163-4497-999b-d98e576f903d"
+     },
+     {
+          "title": "Camiseta Brasil",
+          "description": "Stadium talle m",
+          "code": "116",
+          "price": 14,
+          "status": true,
+          "stock": 25,
+          "category": "jersey",
+          "thumnails": "www",
+          "pid": "59db7c33-80bb-4881-9e42-195b55a29530"
+     },
+     {
+          "title": "Camiseta Jamaica",
+          "description": "Stadium talle m",
+          "code": "116",
+          "price": 14,
+          "status": true,
+          "stock": 25,
+          "category": "jersey",
+          "thumnails": "www",
+          "pid": "0c7607a5-b575-4de3-91ee-c3d454e748aa"
+     },
+     {
+          "title": "Camiseta Uruguay",
+          "description": "Stadium talle m",
+          "code": "116",
+          "price": 14,
+          "status": true,
+          "stock": 25,
+          "category": "jersey",
+          "thumnails": "www",
+          "pid": "4c422146-01f6-432a-b1cc-42ae64a760c8"
+     },
+     {
+          "title": "Camiseta Paraguay",
+          "description": "Stadium talle m",
+          "code": "116",
+          "price": 14,
+          "status": true,
+          "stock": 25,
+          "category": "jersey",
+          "thumnails": "www",
+          "pid": "ee090d13-ebf3-4904-88bc-5251a9e003cd"
+     },
+     {
+          "title": "Camiseta Japón",
+          "description": "Stadium talle m",
+          "code": "116",
+          "price": 14,
+          "status": true,
+          "stock": 25,
+          "category": "jersey",
+          "thumnails": "www",
+          "pid": "d9a15d2b-f370-47a8-bffe-905e09899098"
+     },
+     {
+          "title": "Camiseta Tunez",
+          "description": "Stadium talle m",
+          "code": "116",
+          "price": 14,
+          "status": true,
+          "stock": 25,
+          "category": "jersey",
+          "thumnails": "www",
+          "pid": "b9b70312-615e-4f32-8d5f-29cac0e214c4"
+     },
+     {
+          "title": "Camiseta mexico",
+          "description": "Stadium talle m",
+          "code": "116",
+          "price": 14,
+          "status": true,
+          "stock": 25,
+          "category": "jersey",
+          "thumnails": "www",
+          "pid": "641f2500-0708-4364-87a3-310248d53cc6"
+     },
+     {
+          "title": "Camiseta hungría",
+          "description": "Stadium talle m",
+          "code": "116",
+          "price": 14,
+          "status": true,
+          "stock": 25,
+          "category": "jersey",
+          "thumnails": "www",
+          "pid": "543a9134-c7c0-455f-bdf0-2849e3ff8bd1"
      }
 ]
