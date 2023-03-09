@@ -2,7 +2,7 @@ let productMessage = document.querySelector('#mensajeDeActualizacion');
 let divActualizador = document.querySelector('#actualizador')
 let socket = io();
 
-
+/*
 socket.on('editProduct', async (product) => {
     console.log('Esto andaaaa!!!', product, product.title);
 
@@ -20,11 +20,11 @@ socket.on('editProduct', async (product) => {
     <br>
     </li>`
     }
-    productMessage.innerHTML = `<p> Se ha editado la lista de productos </p>`*/
+    productMessage.innerHTML = `<p> Se ha editado la lista de productos </p>`
 })
+*/
 
 
-/*
 let nombre = prompt("ingrese su nombre");
 
 let divMensajes = document.querySelector('#mensajes');
@@ -66,4 +66,4 @@ textMensaje.addEventListener('keyup',(evento)=>{
     
     })
 
-    */
+    

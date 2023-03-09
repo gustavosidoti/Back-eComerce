@@ -25,8 +25,8 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
 // Servir Contenido de la carpeta public 
-//app.use(express.static(path.join(__dirname,'public')));
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname,'public')));
+//app.use(express.static(__dirname,'/public'));
 
 
 // escucha del server
@@ -64,7 +64,7 @@ io.on('connection', (socket) => {
         mensajes.push(mensaje);
         console.log(mensajes);
 
-        socket.broadcast.emit('nuevoMensaje',mensaje)
+        //socket.broadcast.emit('nuevoMensaje',mensaje)
         io.emit('nuevoMensaje',mensaje)
     })
 
@@ -83,12 +83,17 @@ const realTimeRouter = require('./routes/realtimeproducts.router');
 const productsRouter = require('./routes/products.router');
 
 // Rutas
-
-app.get('/',(req,res)=>{
+app.use('/', require('./routes/views.router'));
+/*app.get('/',(req,res)=>{
     res.setHeader('Content-Type','text/html');
     res.status(200).render('home',{
         estilos:'styles.css'
     });
+})
+*/
+app.get('/api/chat',(req,res)=>{
+    res.setHeader('Content-Type','text/html');
+    res.status(200).render('chat');
 })
 
 app.post('/api/products', async(req, res) =>{
@@ -135,4 +140,3 @@ app.use('/api/carts', require('./routes/carts.router'));
 app.use('/api/realtimeproducts', realTimeRouter);
 
 
-//app.use('/', require('./routes/views.router'));
