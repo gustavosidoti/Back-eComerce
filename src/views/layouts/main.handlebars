@@ -1,15 +1,15 @@
-<!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-</head>
-<body>
+  </head>
+  <body>
     {{{body}}}
-
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/assets/js/socket.js"></script>
-</body>
+    {{!-- ESTE ES MI FRONTEND LO VINCULO CON MI SERVIDO WEBSOCKET --}}
+    <script src="socket.io/socket.io.js"></script>
+    {{!-- mi archivo de logica para vincular front con servidor, rutas desde public! --}}
+    <script src="./index.js"></script>
+  </body>
 </html>

@@ -1,12 +1,12 @@
-const Router = require('express').Router;
-const router = Router();
+import { Router } from "express";
+const routerCart = Router();
 
-const { getCartsByCid, addCart, addProductInCart } = require ('../handlers/carts.handler');
+import { getCartsByCid, addCart, addProductInCart } from '../handlers/carts.handler.js';
 
-router.get('/:cid', getCartsByCid);
+routerCart.get('/:cid', getCartsByCid);
 
-router.post('/', addCart);
+routerCart.post('/', addCart);
 
-router.post('/:cid/product/:pid', addProductInCart);
+routerCart.post('/:cid/product/:pid', addProductInCart);
 
-module.exports = router;
+export {routerCart};

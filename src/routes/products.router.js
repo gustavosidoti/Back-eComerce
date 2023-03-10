@@ -1,60 +1,21 @@
-const Router = require('express').Router;
-const router = Router();
+import { Router } from "express";
+const routerProducts = Router();
 
 
-const { getProducts, getProductByPid, addProduct, updateProduct, deleteProduct } = require('../handlers/products.handler');
-
-const fs = require ('fs');
-const { v4: uuidv4 } = require('uuid');
-const libreriaPath=require('path');
-
-// Carga de archivo de productos
-console.log(libreriaPath.join(__dirname, '../Products.json'));
-path = libreriaPath.join(__dirname, '../Products.json');
-const productsOn = fs.readFileSync(path, 'utf8');
-const products = JSON.parse(productsOn);
+import { getProducts, getProductByPid, addProduct, updateProduct, deleteProduct } from '../handlers/products.handler.js';
 
 
+routerProducts.get('/', getProducts);
 
-router.get('/', getProducts);
+routerProducts.get('/:pid', getProductByPid);
 
-router.get('/:pid', getProductByPid);
+routerProducts.put('/:pid', updateProduct);
 
-router.put('/:pid', updateProduct);
+routerProducts.delete('/:pid', deleteProduct);
 
-router.delete('/:pid', deleteProduct);
+routerProducts.post('/', addProduct);
 
-router.post('/', async(req, res) =>{
-
-    let product = req.body;
-    let io = req.serverSocket;
     
-    if(!product.title || !product.description || !product.code || !product.price || !product.status
-        || !product.stock || !product.category || !product.thumnails || product.pid){
-        res.setHeader('Content-Type','application/json');
-        return res.status(400).json({
-            msg: "Error with any field"
-        });
-
-    }
-
-    product.pid = uuidv4();
-    products.push(product);
-
-    await fs.promises.writeFile(path, JSON.stringify(products, null, 5));
-    //console.log(products);
-    //io.broadcast.emit('editProduct',products)
-    io.emit('editProduct', {
-        products: products
-    });
-   
-    res.setHeader('Content-Type','application/json');
-    res.status(201).json({
-        message: "Ok..",
-        product: product
-    });
-
-});
 
 // exports
-module.exports = router;
+export {routerProducts};

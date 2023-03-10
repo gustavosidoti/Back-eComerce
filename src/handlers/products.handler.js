@@ -1,11 +1,11 @@
-const { response } = require("express");
-const fs = require ('fs');
-const { v4: uuidv4 } = require('uuid');
-const libreriaPath=require('path');
+import * as fs from 'fs';
+import  * as uuidv4 from 'uuid';
+import * as libreriaPath from 'path';
+const __dirname = libreriaPath.resolve();
 
 // Carga de archivo de productos
-console.log(libreriaPath.join(__dirname, '../Products.json'));
-path = libreriaPath.join(__dirname, '../Products.json');
+console.log(libreriaPath.join(__dirname, '/src/products.json'));
+const path = libreriaPath.join(__dirname, '/src/products.json');
 const productsOn = fs.readFileSync(path, 'utf8');
 const products = JSON.parse(productsOn);
 
@@ -14,7 +14,7 @@ const getProducts = async(req, res) =>{
 
     const limit = Number(req.query.limit) || 0;
     if(limit != 0){
-        productsLimit = products.slice(0,limit);
+        const productsLimit = products.slice(0,limit);
         res.setHeader('Content-Type','application/json');
         await res.json(productsLimit);
     }else{
@@ -129,7 +129,7 @@ const deleteProduct = async (req, res) => {
 
 }
 
-module.exports = {
+export {
     getProducts,
     getProductByPid,
     addProduct,

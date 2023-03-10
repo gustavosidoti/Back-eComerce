@@ -1,142 +1,104 @@
-const express=require('express');
-const PORT=8080;
-const engine  = require('express-handlebars').engine;
-const Server = require('socket.io').Server;
-const path=require('path');
+import express from "express";
 
+import { routerCart } from "./routes/carts.router.js";
+import { routerProducts } from "./routes/products.router.js";
+import { routervistas } from "./routes/viewRoutes/vistasRoutes.js";
+import { engine } from "express-handlebars";
+import { Server } from "socket.io";
+import { lecturaArchivo,deleteProductSocket,addProductSocket } from "./utils/utils.js";
 
+const app = express();
 
-// borrar esto
-const fs = require ('fs');
-const { v4: uuidv4 } = require('uuid');
-const pathProducts = path.join(__dirname,'./Products.json');
-const productsOn = fs.readFileSync(pathProducts, 'utf8');
-const products = JSON.parse(productsOn);
-
-const app=express();
-
-// Motor de plantillas
-app.engine('handlebars', engine());
-app.set('view engine', 'handlebars');
-app.set('views', './src/views');
-
-
+app.engine("handlebars", engine());
+app.set("view engine", "handlebars");
+app.set("views", "./src/views");
 app.use(express.json());
-app.use(express.urlencoded({extended:true}));
-
-// Servir Contenido de la carpeta public 
-app.use(express.static(path.join(__dirname,'public')));
-//app.use(express.static(__dirname,'/public'));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static("./src/public"));
 
 
-// escucha del server
-const serverhttp=app.listen(PORT,()=>{
-    console.log(`Server escuchando en puerto PORT ${PORT}`);
+// RUTAS
+app.use("/api/products", routerProducts);
+app.use("/api/carts", routerCart);
+
+//le indico que todo lo que vaya a / sea renderizado por el router de vistas que llama a la vista home para que muestre el contenido
+app.use("/", routervistas);
+
+
+
+
+
+const serverhttp = app.listen(8081, (err) => {
+  if (err) {
+    throw new Error("Error");
+  } else {
+    console.log("Example app listening on port 8081!");
+  }
 });
 
-
-// Comienzo de la configuración de sockets
 const mensajes=[];
 
-const io = new Server(serverhttp);
-io.on('connection', (socket) => {
+//exporto mi servidor websobket
+export const serverSocket = new Server(serverhttp);
 
-    //console.log(socket.handshake);
+//establezco una nueva connection
+serverSocket.on("connection", async (socket) => {
+  //cuando se conecta un nuevo cliente lo saludo y emito el listado de productos
+  //console.log("New client connected", socket.handshake.headers.referer);
+  console.log("New client connected", socket.handshake.headers.referer+" id:"+socket.id);
 
-    console.log(`Se han conectado, socket id ${socket.id}`);
+  
+  //si se trata de una conexion a realtime products
+  if(socket.handshake.headers.referer.includes("/realtimeproducts")){
+
+    let arayprueba = await lecturaArchivo("./src/products.json")
+    socket.emit("products",arayprueba) 
+  }
+
+  if(socket.handshake.headers.referer.includes("/api/chat")){
 
     socket.emit('hola',{
         emisor: 'servidor',
         mensaje: 'Hola desde el server',
         mensajes
     })
+  }
 
-    socket.on('respuestaAlSaludo',(mensaje) => {
-        console.log(`${mensaje.emisor} dice ${mensaje.mensaje}`);
 
-        socket.broadcast.emit('nuevoUsuario',mensaje.emisor)
-    })
+  socket.on("deleteProduct", async (id) => {
+    let response = await deleteProductSocket(id);
+    let arayprueba = await lecturaArchivo("./src/products.json")
+    socket.emit("deleteProductRes", response,arayprueba);
+  });
+
+   socket.on("addProduct", async (data) => {
+    let response = await addProductSocket(data);
+    let arayprueba = await lecturaArchivo("./src/products.json")
+    socket.emit("addProductRes", response,arayprueba);
+  }); 
+
+   // Mensajes del chat
+
+   socket.on('respuestaAlSaludo',(mensaje) => {
+    console.log(`${mensaje.emisor} dice ${mensaje.mensaje}`);
+
+    socket.broadcast.emit('nuevoUsuario',mensaje.emisor)
+   });
 
     socket.on('mensaje',(mensaje)=>{
-        console.log(`${mensaje.emisor} dice ${mensaje.mensaje}`)
+    console.log(`${mensaje.emisor} dice ${mensaje.mensaje}`)
 
-        // todo el codigo que quiera...
-        mensajes.push(mensaje);
-        console.log(mensajes);
+    // todo el codigo que quiera...
+    mensajes.push(mensaje);
+    console.log(mensajes);
 
-        //socket.broadcast.emit('nuevoMensaje',mensaje)
-        io.emit('nuevoMensaje',mensaje)
-    })
-
-    socket.on('editProduct',(products) => {
-        console.log(`Este mensaje es de ${products}`);
-
-        socket.broadcast.emit('editProduct', products)
-    })
-
+    //socket.broadcast.emit('nuevoMensaje',mensaje)
+    io.emit('nuevoMensaje',mensaje)
 })
-
-serverhttp.on('error',(error)=>console.log(error));
-
-
-const realTimeRouter = require('./routes/realtimeproducts.router');
-const productsRouter = require('./routes/products.router');
-
-// Rutas
-app.use('/', require('./routes/views.router'));
-/*app.get('/',(req,res)=>{
-    res.setHeader('Content-Type','text/html');
-    res.status(200).render('home',{
-        estilos:'styles.css'
-    });
-})
-*/
-app.get('/api/chat',(req,res)=>{
-    res.setHeader('Content-Type','text/html');
-    res.status(200).render('chat');
-})
-
-app.post('/api/products', async(req, res) =>{
-
-    let product = req.body;
-    
-    
-    if(!product.title || !product.description || !product.code || !product.price || !product.status
-        || !product.stock || !product.category || !product.thumnails || product.pid){
-        res.setHeader('Content-Type','application/json');
-        return res.status(400).json({
-            msg: "Error with any field"
-        });
-
-    }
-
-    product.pid = uuidv4();
-    products.push(product);
-
-    await fs.promises.writeFile(pathProducts, JSON.stringify(products, null, 5));
-    //console.log(products);
-    //io.broadcast.emit('editProduct',products)
-    io.emit('editProduct', {
-        products: products
-    });
-   
-    res.setHeader('Content-Type','application/json');
-    res.status(201).json({
-        message: "Ok..",
-        product: product
-    });
 
 });
 
-/*app.use('/api/products', (req, res, next) => {
-    req.serverSocket = io;
-    next();
-}, productsRouter);
-*/
-
-app.use('/api/carts', require('./routes/carts.router'));
-//app.use('/api/realtimeproducts', require('./routes/realtimeproducts.router'));
-
-app.use('/api/realtimeproducts', realTimeRouter);
-
-
+app.get('/api/chat',(req,res)=>{
+    res.setHeader('Content-Type','text/html');
+    res.render('chat');
+});

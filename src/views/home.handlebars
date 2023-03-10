@@ -1,17 +1,8 @@
 
-<h2>Products in stock</h2>
+<h1>Lista de productos cargados:</h1>
 
-<table>
-        <thead>
-            <th>Title</th>
-            <th>stock</th>
-        </thead>
-    <tbody>
-            {{#each products}}
-                <tr>
-                    <td>{{title}}</td>
-                    <td>{{stock}}</td>
-                </tr>
-            {{/each}}
-    </tbody>
-</table>
+{{#each arayprueba}}
+    <li>
+        Titulo: {{this.title}}, Descripcion: {{this.description}} , Price: {{this.price}}, Category: {{this.category}}
+    </li>
+{{/each}}
