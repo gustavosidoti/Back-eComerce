@@ -5,6 +5,7 @@ import { routerProducts } from "./routes/products.router.js";
 import { routervistas } from "./routes/viewRoutes/vistasRoutes.js";
 import { engine } from "express-handlebars";
 import { Server } from "socket.io";
+import mongoose from 'mongoose';
 import { lecturaArchivo,deleteProductSocket,addProductSocket } from "./utils/utils.js";
 
 const app = express();
@@ -35,6 +36,18 @@ const serverhttp = app.listen(8081, (err) => {
     console.log("Example app listening on port 8081!");
   }
 });
+
+// Conexion a la BD
+const conectar = async() => {
+  try {
+    await mongoose.connect('mongodb+srv://coderhouse:coderhouse@coderhouse.qltnizo.mongodb.net/ecommerce?retryWrites=true&w=majority');
+    console.log('DB online');
+  } catch (error) {
+    console.log(`Fallo la conexión a la BD ${error}`);
+  }
+}
+
+conectar();
 
 const mensajes=[];
 
