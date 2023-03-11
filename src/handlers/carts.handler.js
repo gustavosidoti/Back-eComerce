@@ -2,12 +2,13 @@ import * as fs from 'fs';
 import  * as uuidv4 from 'uuid';
 import * as path from 'path';
 const __dirname = path.resolve();
-
+import { cartsModel } from '../dao/models/carts.models.js';
+import { productsModel } from '../dao/models/products.models.js';
 
 
 // Carga de archivo de productos
 // const pathProducts = './Products.json';
-
+/*
 const pathProducts = path.join(__dirname,'/src/Products.json');
 const productsOn = fs.readFileSync(pathProducts, 'utf8');
 const products = JSON.parse(productsOn);
@@ -16,12 +17,35 @@ const products = JSON.parse(productsOn);
 const pathCarts = path.join(__dirname,'/src/Carts.json');
 const CartsOn = fs.readFileSync(pathCarts, 'utf8');
 const carts = JSON.parse(CartsOn);
-
+*/
 
 const getCartsByCid = async (req, res) => {
 
     let cid = req.params.cid;
-
+    try{
+        let cartDB = await cartsModel.findById(cid);
+        if( cartDB ){
+            res.setHeader('Content-Type','application/json');
+            res.status(200).json({
+                ok: true,
+                cart: cartDB
+            });
+        }else{
+            res.setHeader('Content-Type','application/json');
+            res.status(400).json({
+                ok: false,
+                msg: `Cannot find the cart with id ${cid}`
+            });
+        }   
+    } catch (error) {
+        console.log(error);
+        res.setHeader('Content-Type','application/json');
+        res.status(500).json({
+            msg: "Cannot connect with database"
+        });
+    }
+    // Para trabajar con filesystem
+    /*
     let cart = await carts.find(e => e.cid == cid);
     if (cart) {
         res.setHeader('Content-Type', 'application/json');
@@ -34,16 +58,32 @@ const getCartsByCid = async (req, res) => {
             error: `Cannot find the cart with id ${cid}`
         })
     }
-}
+    */
+};
 
 const addCart = async (req, res) => {
 
     let cart = {
         products : [],
     };
+
+    try {
+        let cartAdded = await cartsModel.create(cart);
+
+        res.setHeader('Content-Type','application/json');
+        res.status(201).json({
+        message: "Ok..",
+        product: cartAdded
+    });
+    } catch (error) {
+        res.setHeader('Content-Type','application/json');
+        res.status(500).json({
+            msg: "Cannot connect with database"
+        });
+    }
     
-
-
+    // para trabajar con filesystem
+    /*
     cart.cid = uuidv4();
     carts.push(cart);
 
@@ -54,7 +94,7 @@ const addCart = async (req, res) => {
         message: "Ok..",
         cart: cart
     });
-
+    */
 
 }
 
@@ -63,6 +103,33 @@ const addProductInCart = async (req, res) => {
     let cid = req.params.cid;
     let pid = req.params.pid;
 
+    try {
+        // verifico el id valido de ese carro
+        const cartDB = await cartsModel.findById(cid);
+
+        if (!cartDB) {
+            return res.status(404).json({
+                ok: false,
+                msg: `Cannot find the cart with id ${cid}`
+            });
+        }
+        // verifico si existe el producto que se intenta guardar
+        const productDB = await productsModel.findById(pid);
+
+        if (!productDB) {
+            return res.status(404).json({
+                ok: false,
+                msg: `Cannot find the product with id ${pid}`
+            });
+        }
+
+
+
+    } catch (error) {
+        
+    }
+
+    /*
     // Verifico si existe el carrito deseado
     let cartIndex = await carts.findIndex(e => e.cid == cid);
     let cartExist = cartIndex !== -1;
@@ -99,7 +166,7 @@ const addProductInCart = async (req, res) => {
             error: `Cannot find the cart with id ${cid}`
         })
     }
-
+    */
 
 }
 

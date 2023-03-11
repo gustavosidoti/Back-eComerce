@@ -47,12 +47,12 @@ const getProductByPid = async(req, res) =>{
 
         // CON FILESYSTEM
         //let product = await products.find(e => e.pid == pid);
-        productoDB = await productsModel.findById(pid);
-    if( product ){
+       let productDB = await productsModel.findById(pid);
+    if( productDB ){
         res.setHeader('Content-Type','application/json');
         res.status(200).json({
             ok: true,
-            product: product
+            product: productDB
         });
     }else{
         res.setHeader('Content-Type','application/json');
@@ -115,7 +115,7 @@ const updateProduct = async(req, res) =>{
     let pid = req.params.pid;
 
     try {
-        // verifico el id valido de ese usuario
+        // verifico el id valido de ese producto
         const productDB = await productsModel.findById(pid);
 
         if (!productDB) {

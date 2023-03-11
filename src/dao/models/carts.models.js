@@ -1,10 +1,17 @@
 import { Schema, model } from "mongoose";
-
+//var Product = mongoose.model('productsCollection');
 const cartsCollection = 'carts';
 
 const cartSchema = new Schema({
     
-    products: Array
+    products: [{
+          pid: { 
+            required: true,
+            type: Schema.Types.ObjectId, 
+            ref: "Product" 
+          },
+          quantity: Number
+    }]
 });
 
 cartSchema.method('toJSON', function() {
