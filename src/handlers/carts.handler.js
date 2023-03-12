@@ -73,7 +73,7 @@ const addCart = async (req, res) => {
         res.setHeader('Content-Type','application/json');
         res.status(201).json({
         message: "Ok..",
-        product: cartAdded
+        cart: cartAdded
     });
     } catch (error) {
         res.setHeader('Content-Type','application/json');
@@ -105,7 +105,7 @@ const addProductInCart = async (req, res) => {
 
     try {
         // verifico el id valido de ese carro
-        const cartDB = await cartsModel.findById(cid);
+        let cartDB = await cartsModel.findById(cid);
 
         if (!cartDB) {
             return res.status(404).json({
@@ -123,10 +123,41 @@ const addProductInCart = async (req, res) => {
             });
         }
 
+        // verifico si el producto existe en el carrito deseado
+        //let productIndex = await cartDB.products.findIndex({"pid": pid});
+        let productIndex = cartDB.products.findIndex((item) => item.pid == pid);
+        
+        let cartUpdated;
 
+        if (productIndex != -1) {
+
+            cartDB.products[productIndex].quantity++;
+            cartUpdated = await cartsModel.findByIdAndUpdate(cid, cartDB, { new: true });
+            
+        } else {
+            let cartItem = {
+                "pid": pid,
+                "quantity": 1
+            };
+            cartDB.products.push(cartItem);
+            
+            cartUpdated = await cartsModel.findByIdAndUpdate(cid, cartDB, { new: true });
+            
+        }
+
+        
+
+        res.setHeader('Content-Type', 'application/json');
+        res.status(201).json({
+            message: "Cart updated..",
+            carts: cartUpdated
+        });
 
     } catch (error) {
-        
+        res.setHeader('Content-Type','application/json');
+        res.status(500).json({
+            msg: "Cannot connect with database"
+        });
     }
 
     /*
@@ -168,10 +199,73 @@ const addProductInCart = async (req, res) => {
     }
     */
 
+};
+
+const deleteProductInCart = async (req, res) => {
+
+    let cid = req.params.cid;
+    let pid = req.params.pid;
+
+    try {
+        // verifico el id valido de ese carro
+        let cartDB = await cartsModel.findById(cid);
+
+        if (!cartDB) {
+            return res.status(404).json({
+                ok: false,
+                msg: `Cannot find the cart with id ${cid}`
+            });
+        }
+        // verifico si existe el producto que se intenta guardar
+        const productDB = await productsModel.findById(pid);
+
+        if (!productDB) {
+            return res.status(404).json({
+                ok: false,
+                msg: `Cannot find the product with id ${pid}`
+            });
+        }
+
+        // verifico si el producto existe en el carrito deseado
+        //let productIndex = await cartDB.products.findIndex({"pid": pid});
+        let productIndex = cartDB.products.findIndex((item) => item.pid == pid);
+        
+        let cartUpdated;
+
+        if (productIndex != -1) {
+
+            cartDB.products.splice(productIndex, 1)
+
+            
+            cartUpdated = await cartsModel.findByIdAndUpdate(cid, cartDB, { new: true });
+            
+        } else {
+            return res.status(404).json({
+                ok: false,
+                msg: `Cannot find the product in cart`
+            });
+            
+        }
+
+        
+
+        res.setHeader('Content-Type', 'application/json');
+        res.status(201).json({
+            message: "Cart updated..",
+            carts: cartUpdated
+        });
+
+    } catch (error) {
+        res.setHeader('Content-Type','application/json');
+        res.status(500).json({
+            msg: "Cannot connect with database"
+        });
+    }
 }
 
 export  {
     getCartsByCid,
     addCart,
-    addProductInCart
+    addProductInCart,
+    deleteProductInCart
 }

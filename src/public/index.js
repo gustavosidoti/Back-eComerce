@@ -3,7 +3,7 @@
 //ACA GENERO LA CONEXION CON MI SERVIDOR, SE HIZO UNA CONNECTION!
 //cada vez qe entre a localhost se inicia una connection nueva!
 
-socket = io();
+let socket = io();
 
 
 if (location.pathname == "/realtimeproducts") {
@@ -43,54 +43,6 @@ if (location.pathname == "/realtimeproducts") {
   })
 
 } 
-
-if (location.pathname == "/api/chat") {
-
-    
-        
-    //let nombre = prompt("ingrese su nombre") | "anonimus" ;
-
-    let nombre = "ale";
-
-    let divMensajes = document.querySelector('#mensajes');
-    let textMensaje = document.querySelector('#mensaje');
-
-    textMensaje.addEventListener('keyup',(evento)=>{
-        // console.log(evento.key, evento.keyCode, evento.target.value);
-        if(evento.keyCode==13){
-            if(evento.target.value.trim()!=''){
-                socket.emit('mensaje',{
-                    emisor:nombre,
-                    mensaje:evento.target.value
-                })
-                textMensaje.value='';
-                textMensaje.focus();
-            }
-
-        }
-    })
-
-    socket.on('hola',(objeto)=>{
-        console.log(`${objeto.emisor} dice ${objeto.mensaje}`)
-    
-        objeto.mensajes.forEach(el=>{
-            divMensajes.innerHTML+=`<br><div class='mensaje'><strong>${el.emisor}</strong> dice <i>${el.mensaje}</i></div>`
-        });
-    
-        socket.emit('respuestaAlSaludo',{
-            emisor:nombre,
-            mensaje:`Hola, desde el Frontend`
-        })
-    })
-    
-    socket.on('nuevoMensaje',(mensaje)=>{
-        divMensajes.innerHTML+=`<br><div class='mensaje'><strong>${mensaje.emisor}</strong> dice <i>${mensaje.mensaje}</i></div>`
-    
-        divMensajes.scrollTop=divMensajes.scrollHeight;
-    
-    })
-
-}
 
 //ENVIOS Y RECIBOS DE WEBSOCKET
 // Escuchar la lista de productos actualizada desde el servidor

@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { lecturaArchivo } from "../../utils/utils.js";
+import { messagesModel } from '../../dao/models/messages.models.js';
 
 
 const routervistas = Router();
@@ -21,5 +22,13 @@ routervistas.get("/realtimeproducts", (req, res) => {
   res.setHeader("Content-Type", "text/html");
   res.render("realTimeProducts");
 });
+
+routervistas.get("/chat", async (req, res) => {  
+
+  let messages = await messagesModel.find().lean();
+  res.render("chat", { messages });
+
+});
+
 
 export { routervistas };

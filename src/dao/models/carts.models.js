@@ -8,7 +8,7 @@ const cartSchema = new Schema({
           pid: { 
             required: true,
             type: Schema.Types.ObjectId, 
-            ref: "Product" 
+            ref: "products" 
           },
           quantity: Number
     }]

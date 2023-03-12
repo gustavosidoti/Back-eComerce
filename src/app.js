@@ -7,6 +7,7 @@ import { engine } from "express-handlebars";
 import { Server } from "socket.io";
 import mongoose from 'mongoose';
 import { lecturaArchivo,deleteProductSocket,addProductSocket } from "./utils/utils.js";
+import { messagesModel } from "./dao/models/messages.models.js";
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use(express.static("./src/public"));
 // RUTAS
 app.use("/api/products", routerProducts);
 app.use("/api/carts", routerCart);
+
 
 //le indico que todo lo que vaya a / sea renderizado por el router de vistas que llama a la vista home para que muestre el contenido
 app.use("/", routervistas);
@@ -49,7 +51,7 @@ const conectar = async() => {
 
 conectar();
 
-const mensajes=[];
+
 
 //exporto mi servidor websobket
 export const serverSocket = new Server(serverhttp);
@@ -68,15 +70,6 @@ serverSocket.on("connection", async (socket) => {
     socket.emit("products",arayprueba) 
   }
 
-  if(socket.handshake.headers.referer.includes("/api/chat")){
-
-    socket.emit('hola',{
-        emisor: 'servidor',
-        mensaje: 'Hola desde el server',
-        mensajes
-    })
-  }
-
 
   socket.on("deleteProduct", async (id) => {
     let response = await deleteProductSocket(id);
@@ -92,26 +85,11 @@ serverSocket.on("connection", async (socket) => {
 
    // Mensajes del chat
 
-   socket.on('respuestaAlSaludo',(mensaje) => {
-    console.log(`${mensaje.emisor} dice ${mensaje.mensaje}`);
-
-    socket.broadcast.emit('nuevoUsuario',mensaje.emisor)
-   });
-
-    socket.on('mensaje',(mensaje)=>{
-    console.log(`${mensaje.emisor} dice ${mensaje.mensaje}`)
-
-    // todo el codigo que quiera...
-    mensajes.push(mensaje);
-    console.log(mensajes);
-
-    //socket.broadcast.emit('nuevoMensaje',mensaje)
-    io.emit('nuevoMensaje',mensaje)
-})
+   socket.on("newMessage", async ({ user, message }) => {
+    await messagesModel.create({ user: user, message: message });
+    serverSocket.emit("messagesListUpdated");
+  })
+    
 
 });
 
-app.get('/api/chat',(req,res)=>{
-    res.setHeader('Content-Type','text/html');
-    res.render('chat');
-});
