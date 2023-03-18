@@ -1,0 +1,11 @@
+<h3>Detalle del producto {{productDB.id}}</h3>
+
+<ul>
+    <li>
+        Titulo: {{productDB.title}}, Descripcion: {{productDB.description}} , Price: {{productDB.price}}, Category: {{productDB.category}}
+    </li>
+    <form action="/products/productAdded" method="post">
+            <input type="text" value={{productDB.id}} hidden= "true" name="pid">
+            <button>Agregar al carro</button>                    
+    </form>
+</ul>

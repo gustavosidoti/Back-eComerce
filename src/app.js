@@ -11,7 +11,12 @@ import { messagesModel } from "./dao/models/messages.models.js";
 
 const app = express();
 
-app.engine("handlebars", engine());
+app.engine("handlebars", engine({
+  runtimeOptions: {
+    allowProtoPropertiesByDefault: true,
+    allowProtoMethodsByDefault: true
+  },
+}));
 app.set("view engine", "handlebars");
 app.set("views", "./src/views");
 app.use(express.json());

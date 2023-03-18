@@ -14,6 +14,8 @@ const cartSchema = new Schema({
     }]
 });
 
+
+
 cartSchema.method('toJSON', function() {
 
     const { // quitamos lo que no queremos devolver luego del post
