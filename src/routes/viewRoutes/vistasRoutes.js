@@ -15,7 +15,7 @@ let arayprueba = await lecturaArchivo(archivoURL)
 routervistas.get("/", async(req, res) => {
 
   let productoDB;
-    let pageActual = req.query.page | 1;
+    let pageActual = req.query.pagina | 1;
     let limitElements = req.query.limit | 10;
     let sortElements = req.query.order | 0;
 
@@ -50,22 +50,28 @@ routervistas.get("/chat", async (req, res) => {
 routervistas.get("/products", async (req, res) => {  
 
     let productoDB;
-    let pageActual = req.query.page | 1;
-    let limitElements = req.query.limit | 10;
+    let pageActual = 1;
+
+    if(req.query.pagina){
+      pageActual = req.query.pagina;
+    }
+
+    let limitElements = req.query.limit | 4;
     let sortElements = req.query.order | 0;
     let filterElements = req.query.category;
     try {
         
       
-        productoDB = await productsModel.paginate({},{page: pageActual, limit: limitElements, sort:{price: sortElements}});
+        productoDB = await productsModel.paginate({},{page:pageActual, limit: limitElements, sort:{price: sortElements}});
 
+        console.log(productoDB);
         let {totalPages, hasPrevPages, hasNextPage, prevPage, nextPage} = productoDB;
         
-
         res.setHeader("Content-Type", "text/html");
         res.status(200).render("products", { 
           productoDB, totalPages, hasPrevPages, hasNextPage, prevPage, nextPage
         });
+
 
     } catch (error) {
         res.setHeader('Content-Type','application/json');

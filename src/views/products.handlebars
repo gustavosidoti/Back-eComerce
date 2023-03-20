@@ -24,11 +24,9 @@
     </tbody>
 </table>
 
-<a href="/?pagina=1">Primer Página</a>
+<a href="/products?pagina=1">Primer Página</a>
 {{#if prevPage}}
-    <a href="/?pagina={{prevPage}}">Pág Anterior</a>
+    <a href="/products?pagina={{prevPage}}">Pág Anterior</a>
 {{/if}}
-{{#if nextPage}}
-<a href="/?pagina={{nextPage}}">Pág Siguiente</a>
-{{/if}}
-<a href="/?pagina={{totalPages}}">Ultima Pagina</a>
+<a href="/products?pagina={{nextPage}}">Pág Siguiente</a>
+<a href="/products?pagina={{totalPages}}">Ultima Pagina</a>

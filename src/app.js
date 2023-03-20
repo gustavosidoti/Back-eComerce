@@ -1,5 +1,7 @@
 import express from "express";
-
+import * as fs from 'fs';
+import * as libreriaPath from 'path';
+const __dirname = libreriaPath.resolve();
 import { routerCart } from "./routes/carts.router.js";
 import { routerProducts } from "./routes/products.router.js";
 import { routervistas } from "./routes/viewRoutes/vistasRoutes.js";
@@ -8,6 +10,17 @@ import { Server } from "socket.io";
 import mongoose from 'mongoose';
 import { lecturaArchivo,deleteProductSocket,addProductSocket } from "./utils/utils.js";
 import { messagesModel } from "./dao/models/messages.models.js";
+import { productsModel } from '../src/dao/models/products.models.js';
+import { cartsModel } from '../src/dao/models/carts.models.js';
+
+
+  // Carga de archivo de productos usar FILESYSTEM
+
+console.log(libreriaPath.join(__dirname, '/src/products.json'));
+const path = libreriaPath.join(__dirname, '/src/products.json');
+const productsOn = fs.readFileSync(path, 'utf8');
+const productsDB = JSON.parse(productsOn);
+
 
 const app = express();
 
@@ -49,9 +62,21 @@ const conectar = async() => {
   try {
     await mongoose.connect('mongodb+srv://coderhouse:coderhouse@coderhouse.qltnizo.mongodb.net/ecommerce?retryWrites=true&w=majority');
     console.log('DB online');
+
+        /*await productsModel.deleteMany({});
+        let resultado=await productsModel.create(
+          productsDB
+         )
+         console.log(resultado)
+
+         await cartsModel.deleteMany({});
+        */
+
   } catch (error) {
     console.log(`Fallo la conexión a la BD ${error}`);
   }
+
+   
 }
 
 conectar();
