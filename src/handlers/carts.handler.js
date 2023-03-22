@@ -294,11 +294,21 @@ const deleteAllProductsInCart = async (req, res) => {
     }
 }
 
+const updateCart = async (req, res) => {
+    console.log(req.body.products);
+    await cartsModel.updateOne({_id:req.params.cid},{$set:{products: req.body.products}});
+    res.setHeader('Content-Type', 'application/json');
+        res.status(201).json({
+            message: "Cart updated..",
+        });
+}
+
 export  {
     getCartsByCid,
     addCart,
     addProductInCart,
     addProductQuantityInCart,
     deleteProductInCart,
-    deleteAllProductsInCart
+    deleteAllProductsInCart,
+    updateCart
 }
