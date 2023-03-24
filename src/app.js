@@ -1,25 +1,17 @@
 import express from "express";
-import * as fs from 'fs';
-import * as libreriaPath from 'path';
-const __dirname = libreriaPath.resolve();
-import { routerCart } from "./routes/carts.router.js";
-import { routerProducts } from "./routes/products.router.js";
-import { routervistas } from "./routes/viewRoutes/vistasRoutes.js";
 import { engine } from "express-handlebars";
 import { Server } from "socket.io";
 import mongoose from 'mongoose';
+import cookieParser from 'cookie-parser';
+import sessions from 'express-session'; 
+import { routerCart } from "./routes/carts.router.js";
+import { routerProducts } from "./routes/products.router.js";
+import { routerSessions } from "./routes/sessions.router.js";
+import { routervistas } from "./routes/viewRoutes/vistasRoutes.js";
 import { lecturaArchivo,deleteProductSocket,addProductSocket } from "./utils/utils.js";
 import { messagesModel } from "./dao/models/messages.models.js";
-import { productsModel } from '../src/dao/models/products.models.js';
-import { cartsModel } from '../src/dao/models/carts.models.js';
+import MongoStore from "connect-mongo";
 
-
-  // Carga de archivo de productos usar FILESYSTEM
-
-console.log(libreriaPath.join(__dirname, '/src/products.json'));
-const path = libreriaPath.join(__dirname, '/src/products.json');
-const productsOn = fs.readFileSync(path, 'utf8');
-const productsDB = JSON.parse(productsOn);
 
 
 const app = express();
@@ -35,11 +27,23 @@ app.set("views", "./src/views");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("./src/public"));
+app.use(cookieParser());
+
+app.use(sessions({
+  secret: 'miPalabraSecreta',
+  resave: true,
+  saveUninitialized: true,
+  store:MongoStore.create({
+    mongoUrl:'mongodb+srv://coderhouse:coderhouse@coderhouse.qltnizo.mongodb.net/ecommerce?retryWrites=true&w=majority',
+    ttl:60
+  })
+}));
 
 
 // RUTAS
 app.use("/api/products", routerProducts);
 app.use("/api/carts", routerCart);
+app.use("/api/sessions", routerSessions);
 
 
 //le indico que todo lo que vaya a / sea renderizado por el router de vistas que llama a la vista home para que muestre el contenido

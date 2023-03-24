@@ -6,13 +6,19 @@ import { cartsModel } from '../../dao/models/carts.models.js';
 
 
 const routervistas = Router();
-const archivoURL = "./src/products.json";
 
-let arayprueba = await lecturaArchivo(archivoURL)
-//console.log(arayprueba)
+// MIDLEWARES
+const auth=(req, res, next)=>{
+  if(!req.session.userLogged) return res.redirect('/login')    //return res.sendStatus(401);
+  next();
+}
 
+const auth2=(req, res, next)=>{
+  if(req.session.userLogged) return res.redirect('/')    //return res.sendStatus(401);
+  next();
+}
 
-routervistas.get("/", async(req, res) => {
+routervistas.get("/",auth, async(req, res) => {
 
   let productoDB;
     let pageActual = req.query.pagina | 1;
@@ -23,12 +29,11 @@ routervistas.get("/", async(req, res) => {
 
         let {totalPages, hasPrevPages, hasNextPage, prevPage, nextPage} = productoDB;
 
-    
-
-
   res.setHeader("Content-Type", "text/html");
   res.status(200).render("products", { 
-    productoDB, totalPages, hasPrevPages, hasNextPage, prevPage, nextPage
+    productoDB, totalPages, hasPrevPages, hasNextPage, prevPage, nextPage,
+    nombreCompleto:req.session.userLogged.name+' '+req.session.userLogged.lastName,
+    rol:req.session.userLogged.role
    });
 });
 
@@ -123,9 +128,20 @@ routervistas.get("/cart/:cid", async(req, res) => {
     console.log(error);
     res.sendStatus(500);
 }
-  //LE INDICO QUE RENDERICE LA VISTA REALTIMEPRODUCTS
   
 });
 
+routervistas.get("/register", auth2, (req, res) => {  
 
+  //LE INDICO QUE RENDERICE LA VISTA REGISTER
+  res.setHeader("Content-Type", "text/html");
+  res.render("register");
+});
+
+routervistas.get("/login",auth2, (req, res) => {  
+
+  //LE INDICO QUE RENDERICE LA VISTA LOGIN
+  res.setHeader("Content-Type", "text/html");
+  res.render("login");
+});
 export { routervistas };
