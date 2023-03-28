@@ -22,7 +22,7 @@ routervistas.get("/",auth, async(req, res) => {
 
   let productoDB;
     let pageActual = req.query.pagina | 1;
-    let limitElements = req.query.limit | 10;
+    let limitElements = req.query.limit | 5;
     let sortElements = req.query.order | 0;
 
     productoDB = await productsModel.paginate({},{page: pageActual, limit: limitElements, sort:{price: sortElements}});

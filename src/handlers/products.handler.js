@@ -16,7 +16,7 @@ const getProducts = async(req, res) =>{
 
     let productoDB;
     let pageActual = req.query.page | 1;
-    let limitElements = req.query.limit | 10;
+    let limitElements = req.query.limit | 5;
     let sortElements = req.query.order | 0;
     let filterElements = req.query.category;
     try {
