@@ -11,6 +11,8 @@ import { routervistas } from "./routes/viewRoutes/vistasRoutes.js";
 import { lecturaArchivo,deleteProductSocket,addProductSocket } from "./utils/utils.js";
 import { messagesModel } from "./dao/models/messages.models.js";
 import MongoStore from "connect-mongo";
+import passport from "passport";
+import { inicializaEstrategia } from "./config/passport.js";
 
 
 
@@ -38,7 +40,9 @@ app.use(sessions({
     ttl:60
   })
 }));
-
+inicializaEstrategia();
+app.use(passport.initialize());
+app.use(passport.session());
 
 // RUTAS
 app.use("/api/products", routerProducts);

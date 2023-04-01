@@ -1,12 +1,18 @@
 import { Router } from "express";
-import { userLogin, userLogout, userRegister } from "../handlers/sessions.handler.js";
+import { userLogin, userLogout, userRegister, userErrorLogin, userErrorRegister } from "../handlers/sessions.handler.js";
+import passport from "passport";
+
 const routerSessions = Router();
 
 
 
-routerSessions.post('/register', userRegister);
+routerSessions.post('/register',passport.authenticate('register',{failureRedirect:'/api/sessions/errorRegister', successRedirect:'/login'}), userRegister);
 
-routerSessions.post('/login', userLogin);
+routerSessions.get('/errorLogin', userErrorLogin);
+
+routerSessions.get('/errorRegister', userErrorRegister);
+
+routerSessions.post('/login',passport.authenticate('login',{failureRedirect:'/api/sessions/errorLogin'}), userLogin);
 
 routerSessions.get('/logout', userLogout);
 

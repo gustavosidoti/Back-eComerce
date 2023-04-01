@@ -1,15 +1,15 @@
-import crypto from 'crypto';
-
+//import crypto from 'crypto';
+import { creaHash, esClaveValida } from '../utils/utils.js';
 import { userModels } from '../dao/models/user.models.js';
 
 
 
 const userRegister = async (req, res) => {
 
-    let {name, lastName, email, password, age}=req.body;
-    let role;
+    //let {name, lastName, email, password, age}=req.body;
+    //let role;
     try {
-    
+    /*
         if(!email || !password) {
             return res.status(404).json({
                 ok: false,
@@ -34,11 +34,11 @@ const userRegister = async (req, res) => {
     
     userModels.create({
         name, lastName, email, 
-        password:crypto.createHash('sha256','palabraSecreta').update(password).digest('base64'),
+        password: creaHash(password),
         age,
         role
     })
-
+    */
     res.redirect('/login');
 
     } catch (error) {
@@ -51,28 +51,20 @@ const userRegister = async (req, res) => {
 }
 
 const userLogin = async (req, res) => {
-
-    let {email, password}=req.body;
+   // SE MUDO EL CÓDIGO A UN MIDDLEWARE QUE MANEJA EL LOGIN
+   // let {email, password}=req.body;
 
     try {
-    
-        if(!email || !password) {
-            return res.status(404).json({
-                ok: false,
-                msg: `missed any value`
-            });
-        }
 
-        let userLogged=await userModels.findOne({email:email, password:crypto.createHash('sha256','palabraSecreta').update(password).digest('base64')})
     
-        if(!userLogged) return res.sendStatus(401)
+       
         
         req.session.userLogged={
-            name:userLogged.name, 
-            lastName:userLogged.lastName, 
-            email, 
-            age:userLogged.age,
-            role: userLogged.role
+            name:req.user.name, 
+            lastName:req.user.lastName, 
+            email: req.user.email, 
+            age:req.user.age,
+            role: req.user.role
         }
     
         res.redirect('/');
@@ -97,10 +89,20 @@ const userLogout = async (req, res) => {
     });
 }
 
+const userErrorLogin = (req, res)=>{
+    res.send('Error Login');
+};
+
+const userErrorRegister = (req, res)=>{
+    res.send('Error Register');
+};
+
 
 
 export {
     userRegister,
     userLogin,
-    userLogout
+    userLogout,
+    userErrorLogin,
+    userErrorRegister
 }

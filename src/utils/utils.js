@@ -1,6 +1,18 @@
 import { existsSync } from "fs";
 import { readFile, writeFile } from "node:fs/promises";
 import { v4 as uuidv4 } from "uuid";
+import bcrypt from 'bcrypt';
+
+export const creaHash = (password)=>{
+  return bcrypt.hashSync(password, bcrypt.genSaltSync(10));
+
+}
+
+export const esClaveValida = (password, user)=>{
+  return bcrypt.compareSync(password, user.password)
+}
+
+
 
 
 //funcion de lectura de archivo, tomando como parametro el path del archivo
@@ -59,3 +71,4 @@ export async function lecturaArchivo(path) {
       return `Producto con codigo ${code} ya cargado!`
     }
   }
+  
