@@ -1,38 +1,40 @@
 import passport from 'passport';
 import local from 'passport-local';
+import github from "passport-github2";
 import { creaHash, esClaveValida } from '../utils/utils.js';
 import { userModels } from '../dao/models/user.models.js';
 
+
 export const inicializaEstrategia = ()=>{
-/*
+
     passport.use('github', new github.Strategy({
-        clientID:'Iv1.cef6323d9460de58',
-        clientSecret: '6bdd0717b05069145648bbff6284d417d4af873c',
-        callbackURL : 'http://localhost:3000/api/sessions/callbackGithub'
+        clientID:'Iv1.58941f37a521cc6a',
+        clientSecret: '944c0cbc665b189feebc7483acb64eac3141d2b8',
+        callbackURL : 'http://localhost:8081/api/sessions/callbackGithub'
     },async(accessToken, refreshToken, profile, done)=>{
 
         try {
             console.log(profile);
 
-            let nombre=profile._json.name;
+            let name=profile._json.name;
             let email=profile._json.email;
     
-            let usuario=await usuarioModelo.findOne({email:email});
+            let usuario=await userModels.findOne({email:email});
             if(!usuario){
                 let usuarioNuevo={
-                    nombre,
+                    name,
                     email, 
                     github:true,
                     githubProfile:profile._json
                 }
-                usuario=await usuarioModelo.create(usuarioNuevo);
+                usuario=await userModels.create(usuarioNuevo);
             }else{
                 let actualizaUsuario={
                     github:true,
                     githubProfile:profile._json
                 }
     
-                await usuarioModelo.updateOne({email:email},actualizaUsuario);
+                await userModels.updateOne({email:email},actualizaUsuario);
             }
     
             done(null, usuario)
@@ -44,7 +46,7 @@ export const inicializaEstrategia = ()=>{
         
     }))
 
-*/
+
     passport.use('register', new local.Strategy({usernameField:'email', passReqToCallback:true}, async(req, username, password, done)=>{
                                                                         // me permite utilizar la request en el callback
         try {

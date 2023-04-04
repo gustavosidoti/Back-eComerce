@@ -50,6 +50,27 @@ const userRegister = async (req, res) => {
     }
 }
 
+const userGithub = async (req, res) => {
+
+    
+}
+
+const userGitRegister = async(req, res) => {
+    try {
+        req.session.userLogged={
+            name:req.user.name, 
+            lastName:req.user.lastName, 
+            email: req.user.email, 
+            age:req.user.age,
+            role: req.user.role
+        }
+    
+        res.redirect('/');
+    } catch (error) {
+        
+    }
+}
+
 const userLogin = async (req, res) => {
    // SE MUDO EL CÓDIGO A UN MIDDLEWARE QUE MANEJA EL LOGIN
    // let {email, password}=req.body;
@@ -104,5 +125,7 @@ export {
     userLogin,
     userLogout,
     userErrorLogin,
-    userErrorRegister
+    userErrorRegister,
+    userGithub,
+    userGitRegister
 }

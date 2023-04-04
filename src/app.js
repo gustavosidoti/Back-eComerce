@@ -3,15 +3,17 @@ import { engine } from "express-handlebars";
 import { Server } from "socket.io";
 import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
-import sessions from 'express-session'; 
+import sessions from 'express-session';
+import MongoStore from "connect-mongo";
+import passport from "passport";
+
+
 import { routerCart } from "./routes/carts.router.js";
 import { routerProducts } from "./routes/products.router.js";
 import { routerSessions } from "./routes/sessions.router.js";
 import { routervistas } from "./routes/viewRoutes/vistasRoutes.js";
 import { lecturaArchivo,deleteProductSocket,addProductSocket } from "./utils/utils.js";
 import { messagesModel } from "./dao/models/messages.models.js";
-import MongoStore from "connect-mongo";
-import passport from "passport";
 import { inicializaEstrategia } from "./config/passport.js";
 
 
