@@ -1,104 +1,79 @@
 import passport from 'passport';
-import local from 'passport-local';
-import github from "passport-github2";
-import { creaHash, esClaveValida } from '../utils/utils.js';
-import { userModels } from '../dao/models/user.models.js';
+import passportJWT from 'passport-jwt';
+import { config } from './config.js';
 
+const extraerToken=(req)=>{
+    let token=null;
 
-export const inicializaEstrategia = ()=>{
-
-    passport.use('github', new github.Strategy({
-        clientID:'Iv1.58941f37a521cc6a',
-        clientSecret: '944c0cbc665b189feebc7483acb64eac3141d2b8',
-        callbackURL : 'http://localhost:8081/api/sessions/callbackGithub'
-    },async(accessToken, refreshToken, profile, done)=>{
-
-        try {
-            console.log(profile);
-
-            let name=profile._json.name;
-            let email=profile._json.email;
-    
-            let usuario=await userModels.findOne({email:email});
-            if(!usuario){
-                let usuarioNuevo={
-                    name,
-                    email, 
-                    github:true,
-                    githubProfile:profile._json
-                }
-                usuario=await userModels.create(usuarioNuevo);
+    if(req.cookies.token) {
+        console.log("leyó desde passport la cookie")   
+        token = req.cookies.token;
+    }
+    return token;
+    // CODIGO que sirve para mostrarnos cómo puede venir el token
+     /*
+    if(req.headers.authorization){
+        console.log('toma token desde header authorization, via PASSPORT');
+        token=req.headers.authorization.split(' ')[1]
+    }else{
+        if(req.cookies['token']){
+            console.log('token desde cookie, via PASSPORT')
+            token=req.cookies['token'];
+        }else{
+            if(req.headers.token){
+                console.log('token desde headers, via PASSPORT')
+                token=req.headers.token;
             }else{
-                let actualizaUsuario={
-                    github:true,
-                    githubProfile:profile._json
+                if(req.query.token){
+                    console.log('token desde query params, via PASSPORT')
+                    token=req.query.token;
                 }
-    
-                await userModels.updateOne({email:email},actualizaUsuario);
             }
-    
-            done(null, usuario)
-                
-        } catch (error) {
-            done(error)            
         }
+    }
 
-        
-    }))
-
-
-    passport.use('register', new local.Strategy({usernameField:'email', passReqToCallback:true}, async(req, username, password, done)=>{
-                                                                        // me permite utilizar la request en el callback
-        try {
-            let {name, lastName, age}=req.body;
-
-            if(!username || !password) return done(null, false);
-        
-            let actualUser=await userModels.findOne({email:username});
-            
-            if(actualUser) return done(null, false);
-            
-            let userCreated = await userModels.create({
-                name, lastName, email, 
-                password: creaHash(password),
-                age,
-                role
-            })
-
-            return done(null, userCreated);
-                
-        } catch (error) {
-            done(error);            
-        }
-
-    
-    }))
-
-
-    passport.use('login', new local.Strategy({usernameField:'email'}, async(username, password, done)=>{
-        
-     try {
-        
-         if(!username || !password) return done(null, false)
- 
-         let userLogged= await userModels.findOne({email:username});
-         if(!userLogged) return done(null, false);
- 
-         if(!esClaveValida(password, userLogged )) return done(null,false);
-        console.log('paso por aca');
-        //console.log(userLogged);
-        return done(null, userLogged);
-     } catch (error) {
-        return done(error);
-     }
-    }));
-
-    passport.serializeUser((user, done)=>{
-        done(null, user._id)
-    });
-
-    passport.deserializeUser(async(id, done)=>{
-        let userLogged = await userModels.findOne({_id:id});
-        done(null, userLogged);
-    });
+    return token;
+    */
 }
+
+export const inicializaEstrategias=()=>{
+
+    passport.use('jwt',new passportJWT.Strategy(
+        {
+            jwtFromRequest: passportJWT.ExtractJwt.fromExtractors([extraerToken]),
+            secretOrKey: config.SECRET
+        },
+        (contenidoToken, done)=>{
+            try {
+                // SI QUEREMOS BLOQUEAR UN USUARIO
+                /*if(contenidoToken.usuario.lastName=='Santos'){
+                    done(null, false, {messages:'El usuario Santos se encuentra temporalmente inhabilitado'})
+                }*/
+                done(null, contenidoToken.usuario)
+            } catch (error) {
+                done(error)
+            }
+        }
+    ))
+
+    passport.use('current',new passportJWT.Strategy(
+        {
+            jwtFromRequest: passportJWT.ExtractJwt.fromExtractors([extraerToken]),
+            secretOrKey: config.SECRET
+        },
+        (contenidoToken, done)=>{
+            try {
+                // SI QUEREMOS BLOQUEAR UN USUARIO
+                /*if(contenidoToken.usuario.lastName=='Santos'){
+                    done(null, false, {messages:'El usuario Santos se encuentra temporalmente inhabilitado'})
+                }*/
+
+                done(null, contenidoToken.usuario)
+            } catch (error) {
+                console.log('error desde current')
+                done(error)
+            }
+        }
+    ))
+
+} // fin inicializaEstrategias()

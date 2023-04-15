@@ -1,53 +1,51 @@
 //import crypto from 'crypto';
-import { creaHash, esClaveValida } from '../utils/utils.js';
+import { creaHash, creaJWT, esClaveValida } from '../utils/utils.js';
 import { userModels } from '../dao/models/user.models.js';
-
 
 
 const userRegister = async (req, res) => {
 
-    //let {name, lastName, email, password, age}=req.body;
-    //let role;
+    
+    let {name, lastName, email, password, age}=req.body;
+    let role;
     try {
-    /*
-        if(!email || !password) {
+        
+            if(!email || !password) {
+                return res.status(404).json({
+                    ok: false,
+                    msg: `missed any value`
+                });
+            }
+        let actualUser= await userModels.findOne({email:email})
+        
+        if(actualUser) {
             return res.status(404).json({
                 ok: false,
-                msg: `missed any value`
+                msg: `the user ${email} already exist`
             });
         }
-
-    let actualUser= await userModels.findOne({email:email})
+        if(email === 'adminCoder@coder.com' || email === 'gustavosidoti@gmail.com' ){
+            role = '643a9a28c3cfc38957a37998'; // ADMIN
+        }else{
+            role = '643a9b1fc3cfc38957a37999';
+        }
+        
+        userModels.create({
+            name, lastName, email, 
+            password: creaHash(password),
+            age,
+            role
+        })
+        
+        res.redirect('/login');
     
-    if(actualUser) {
-        return res.status(404).json({
-            ok: false,
-            msg: `the user ${email} already exist`
-        });
-    }
-
-    if(email === 'adminCoder@coder.com'){
-        role = 'admin';
-    }else{
-        role = 'user';
-    }
-    
-    userModels.create({
-        name, lastName, email, 
-        password: creaHash(password),
-        age,
-        role
-    })
-    */
-    res.redirect('/login');
-
-    } catch (error) {
-        console.log(error);
-        res.setHeader('Content-Type','application/json');
-        res.status(500).json({
-            msg: "Cannot connect with database"
-        });
-    }
+        } catch (error) {
+            console.log(error);
+            res.setHeader('Content-Type','application/json');
+            res.status(500).json({
+                msg: "Cannot connect with database"
+            });
+        }
 }
 
 const userGithub = async (req, res) => {
@@ -56,58 +54,66 @@ const userGithub = async (req, res) => {
 }
 
 const userGitRegister = async(req, res) => {
+   
+
+}
+
+const currentUser = async(req, res) => {
     try {
-        req.session.userLogged={
-            name:req.user.name, 
-            lastName:req.user.lastName, 
-            email: req.user.email, 
-            age:req.user.age,
-            role: req.user.role
-        }
-    
-        res.redirect('/');
+        let actualUser = await userModels.findOne({name:req.user.name})
+                                    .populate('role');
+        res.success2('Usuario Logueado', actualUser);
     } catch (error) {
-        
+        console.log(error);
+        res.errorCliente(error);
     }
+ 
 }
 
 const userLogin = async (req, res) => {
    // SE MUDO EL CÓDIGO A UN MIDDLEWARE QUE MANEJA EL LOGIN
-   // let {email, password}=req.body;
-
-    try {
-
-    
-       
+   let {email,password} = req.body;
+   try {
         
-        req.session.userLogged={
-            name:req.user.name, 
-            lastName:req.user.lastName, 
-            email: req.user.email, 
-            age:req.user.age,
-            role: req.user.role
-        }
-    
-        res.redirect('/');
+    if(!email || !password) return res.sendStatus(400);
 
+    let userLogged= await userModels.findOne({email:email});
+    
+    if(!userLogged) return res.sendStatus(400);
+
+    if(!esClaveValida(password, userLogged )) return res.sendStatus(400);
+
+    let usuarioConRol={
+        name:userLogged.name, 
+        apellido:userLogged.lastName, 
+        email, 
+        age:userLogged.age,
+        role:userLogged.role
+    }
+   
+    let token=creaJWT(usuarioConRol);
+
+    // 2 horas de duración
+    //res.cookie('token',token,{maxAge:1000*60*120}).redirect('/');
+    res.cookie('token',token,{maxAge:1000*60*120, httpOnly:true})
+    .cookie('cookieConHttpOnly',token,{maxAge:1000*60*120, httpOnly:true})
+    .cookie('cookieSinHttpOnly',token,{maxAge:1000*60*120})
+    .success2('login ok', token);
+    
     } catch (error) {
         console.log(error);
         res.setHeader('Content-Type','application/json');
         res.status(500).json({
-            msg: "Error with the program"
+            msg: "Cannot connect with database"
         });
     }
+
+   
 }
 
 const userLogout = async (req, res) => {
 
-    req.session.destroy((err)=>{
-        if(err){
-            res.sendStatus(500);
-        }else{
-            res.redirect('/login');
-        }
-    });
+    res.redirect('/login');
 }
 
 const userErrorLogin = (req, res)=>{
@@ -127,5 +133,6 @@ export {
     userErrorLogin,
     userErrorRegister,
     userGithub,
-    userGitRegister
+    userGitRegister,
+    currentUser
 }

@@ -1,24 +1,26 @@
-import { Router } from "express";
-import { userLogin, userLogout, userRegister, userErrorLogin, userErrorRegister, userGithub, userGitRegister } from "../handlers/sessions.handler.js";
+import { Mirouter } from "./router.js";
+import { userLogin, userLogout, userRegister, userErrorLogin, userErrorRegister, currentUser, userGithub, userGitRegister } from "../handlers/sessions.handler.js";
 import passport from "passport";
+import jwt from 'jsonwebtoken';
 
-const routerSessions = Router();
+export class SessionsRouter extends Mirouter{
+    init(){ // como esta es una clase hija de Mirouter completamos el init acá
+        //this.get('/github',passport.authenticate('github',{}), userGithub);
 
-routerSessions.get('/github',passport.authenticate('github',{}), userGithub);
+        //this.get('/callbackGithub',passport.authenticate('github',{failureRedirect:'/login'}), userGitRegister);
 
-routerSessions.get('/callbackGithub',passport.authenticate('github',{failureRedirect:'/login'}), userGitRegister);
+        //this.post('/register',['PUBLIC'],passport.authenticate('register',{failureRedirect:'/api/sessions/errorRegister', successRedirect:'/login'}), userRegister);
+        this.post('/register', ['PUBLIC'], userRegister);
 
-routerSessions.post('/register',passport.authenticate('register',{failureRedirect:'/api/sessions/errorRegister', successRedirect:'/login'}), userRegister);
+        this.get('/errorLogin', userErrorLogin);
 
-routerSessions.get('/errorLogin', userErrorLogin);
+        this.get('/errorRegister', userErrorRegister);
 
-routerSessions.get('/errorRegister', userErrorRegister);
+        //routerSessions.post('/login',passport.authenticate('login',{failureRedirect:'/api/sessions/errorLogin'}), userLogin);
+        this.post('/login', ['PUBLIC'], userLogin);
 
-routerSessions.post('/login',passport.authenticate('login',{failureRedirect:'/api/sessions/errorLogin'}), userLogin);
+        this.get('/logout', ['PUBLIC'], userLogout);
 
-routerSessions.get('/logout', userLogout);
-
-    
-
-// exports
-export {routerSessions};
+        this.get('/current', ['PUBLIC'], currentUser);
+    }
+}

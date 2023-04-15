@@ -1,8 +1,24 @@
+<style>
+    a{
+        padding: 10px;
+        border: 1px solid #222;
+        color: #333;
+        background-color: #ccc;
+        border-radius: 5px;
+    }
+</style>
+
 <h2>Products</h2>
 <br>
 Bienvenido: {{nombreCompleto}} || Rol: {{rol}} || <a href="/api/sessions/logout">Logout</a>
 
 <hr>
+<p id="datos">Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe, laborum vero? Illo ratione, ipsum doloremque, libero nemo sunt ipsa mollitia fuga in, asperiores laudantium? Nobis earum voluptas laboriosam rerum facere.</p>
+
+<br>
+<a href="#" id="btnDatos">Actualizar datos</a>
+<hr>
+<br>
 <table>
         <thead>
             <th>Title</th>
@@ -34,3 +50,23 @@ Bienvenido: {{nombreCompleto}} || Rol: {{rol}} || <a href="/api/sessions/logout"
 <a href="/products?pagina={{nextPage}}">Pág Siguiente</a>
 <a href="/products?pagina={{totalPages}}">Ultima Pagina</a>
 
+<script>
+    let datos=document.getElementById('datos');
+    let btnDatos=document.getElementById('btnDatos');
+    btnDatos.addEventListener('click',(e)=>{
+        e.preventDefault();
+        fetch('/datos',{
+            method:'GET',
+            headers: {
+                'Content-Type':'application/json',
+                'Authorization':'Bearer '+localStorage.getItem('token')
+            }
+        }).then(result=>{
+            return result.text()
+        }).then(data=>{
+            datos.innerHTML=data;
+            let cookies=document.cookie;
+            console.log(cookies) 
+        });
+    })
+</script>

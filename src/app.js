@@ -3,22 +3,24 @@ import { engine } from "express-handlebars";
 import { Server } from "socket.io";
 import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
-import sessions from 'express-session';
-import MongoStore from "connect-mongo";
+//import sessions from 'express-session';
+//import MongoStore from "connect-mongo";
 import passport from "passport";
-
+import { inicializaEstrategias } from "./config/passport.js";
 
 import { routerCart } from "./routes/carts.router.js";
 import { routerProducts } from "./routes/products.router.js";
-import { routerSessions } from "./routes/sessions.router.js";
+import { SessionsRouter } from "./routes/sessions.router.js";
 import { routervistas } from "./routes/viewRoutes/vistasRoutes.js";
 import { lecturaArchivo,deleteProductSocket,addProductSocket } from "./utils/utils.js";
 import { messagesModel } from "./dao/models/messages.models.js";
-import { inicializaEstrategia } from "./config/passport.js";
+import { config } from './config/config.js';
+
 
 
 
 const app = express();
+const PORT = config.PORT;
 
 app.engine("handlebars", engine({
   runtimeOptions: {
@@ -33,44 +35,33 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static("./src/public"));
 app.use(cookieParser());
 
-app.use(sessions({
-  secret: 'miPalabraSecreta',
-  resave: true,
-  saveUninitialized: true,
-  store:MongoStore.create({
-    mongoUrl:'mongodb+srv://coderhouse:coderhouse@coderhouse.qltnizo.mongodb.net/ecommerce?retryWrites=true&w=majority',
-    ttl:60
-  })
-}));
-inicializaEstrategia();
+
+inicializaEstrategias();
 app.use(passport.initialize());
-app.use(passport.session());
+//app.use(passport.session());
 
 // RUTAS
+const sessionRouter = new SessionsRouter();
 app.use("/api/products", routerProducts);
 app.use("/api/carts", routerCart);
-app.use("/api/sessions", routerSessions);
+app.use("/api/sessions", sessionRouter.getRouter());
 
 
 //le indico que todo lo que vaya a / sea renderizado por el router de vistas que llama a la vista home para que muestre el contenido
 app.use("/", routervistas);
 
-
-
-
-
-const serverhttp = app.listen(8081, (err) => {
+const serverhttp = app.listen(PORT, (err) => {
   if (err) {
     throw new Error("Error");
   } else {
-    console.log("Example app listening on port 8081!");
+    console.log(`Example app listening on port ${PORT}!`);
   }
 });
 
 // Conexion a la BD
 const conectar = async() => {
   try {
-    await mongoose.connect('mongodb+srv://coderhouse:coderhouse@coderhouse.qltnizo.mongodb.net/ecommerce?retryWrites=true&w=majority');
+    await mongoose.connect(config.MONGOURL);
     console.log('DB online');
 
         /*await productsModel.deleteMany({});

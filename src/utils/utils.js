@@ -2,14 +2,16 @@ import { existsSync } from "fs";
 import { readFile, writeFile } from "node:fs/promises";
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import passport from 'passport';
 
 export const creaHash = (password)=>{
-  return bcrypt.hashSync(password, bcrypt.genSaltSync(10));
+  return bcrypt.hashSync(password,bcrypt.genSaltSync(10))
 
 }
 
 export const esClaveValida = (password, user)=>{
-  return bcrypt.compareSync(password, user.password)
+  return bcrypt.compareSync(password, user.password);
 }
 
 
@@ -71,4 +73,66 @@ export async function lecturaArchivo(path) {
       return `Producto con codigo ${code} ya cargado!`
     }
   }
+
+  const SECRET = 'miPalabraSecreta';
+
+  // CREA JWT
+  export const creaJWT = (usuario)=>{
+    return jwt.sign({usuario},SECRET,{expiresIn:'24h'});
+  }
   
+  // VALIDAR JWT
+  export const validarJWT = (req, res, next)=>{
+    // evalua si hay un token
+    let token = '';
+    if(req.headers.authorization){
+      console.log('toma token desde header authorization');
+      token=req.headers.authorization.split(' ')[1]
+  }else{
+      if(req.cookies['token']){
+          console.log('token desde cookie')
+          token=req.cookies['token'];
+      }else{
+          if(req.headers.token){
+              console.log('token desde headers')
+              token=req.headers.token;
+          }else{
+              if(req.query.token){
+                  console.log('token desde query params')
+                  token=req.query.token;
+              }else{
+                  return res.sendStatus(401);
+              }
+          }
+      }
+  }
+    // verifica si el token es valido
+    jwt.verify(token, SECRET, (error, credenciales)=>{
+      if(error){
+        res.sendStatus(401);
+      }else{
+        req.user=credenciales.usuario;
+        next();
+      }
+    })
+
+  }
+
+  export const passportCall=(estrategia)=>{
+    return async(req, res, next)=>{
+        passport.authenticate(estrategia, (error, usuario, info)=>{
+            if (error)return next(error);
+            if(!usuario){
+                if(!info){
+                    return res.status(401).send('No autenticado');
+                }else{
+                  
+                    return res.status(401).send({error:info.messages?info.messages:info.toString()})
+                }
+            }
+            
+            req.user=usuario;
+            next();
+        })(req, res, next)
+    }
+}

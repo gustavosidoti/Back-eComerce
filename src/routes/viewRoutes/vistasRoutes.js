@@ -1,14 +1,28 @@
 import { Router } from "express";
-import { lecturaArchivo } from "../../utils/utils.js";
+import { validarJWT, passportCall } from "../../utils/utils.js";
 import { messagesModel } from '../../dao/models/messages.models.js';
 import { productsModel } from '../../dao/models/products.models.js';
 import { cartsModel } from '../../dao/models/carts.models.js';
+import { rolesModel } from '../../dao/models/roles.models.js';
+import passport  from "passport";
 
 
 const routervistas = Router();
 
 // MIDLEWARES
-const auth=(req, res, next)=>{
+
+const autorizacion=(rol)=>{
+  return (req, res, next)=>{
+      console.log(req.user)
+
+      if(req.user.role=='ADMIN') return next();
+      if(req.user.role!=rol) return res.status(403).send('No tiene privilegios suficientes para acceder al recursooooooo');
+      next();
+  }
+}
+
+
+/*const auth=(req, res, next)=>{
   if(!req.session.userLogged) return res.redirect('/login')    //return res.sendStatus(401);
   next();
 }
@@ -16,9 +30,10 @@ const auth=(req, res, next)=>{
 const auth2=(req, res, next)=>{
   if(req.session.userLogged) return res.redirect('/')    //return res.sendStatus(401);
   next();
-}
+}*/
 
-routervistas.get("/",auth, async(req, res) => {
+//routervistas.get("/", passport.authenticate('jwt',{session:false}), async(req, res) => {
+  routervistas.get('/',passportCall('jwt'),async(req,res)=>{
 
   let productoDB;
     let pageActual = req.query.pagina | 1;
@@ -27,13 +42,14 @@ routervistas.get("/",auth, async(req, res) => {
 
     productoDB = await productsModel.paginate({},{page: pageActual, limit: limitElements, sort:{price: sortElements}});
 
+    let rolUsuario = await rolesModel.findOne({_id:req.user.role})
+
         let {totalPages, hasPrevPages, hasNextPage, prevPage, nextPage} = productoDB;
 
   res.setHeader("Content-Type", "text/html");
   res.status(200).render("products", { 
     productoDB, totalPages, hasPrevPages, hasNextPage, prevPage, nextPage,
-    nombreCompleto:req.session.userLogged.name+' '+req.session.userLogged.lastName,
-    rol:req.session.userLogged.role
+    nombreCompleto: req.user.name, rol: rolUsuario.nombre
    });
 });
 
@@ -131,17 +147,24 @@ routervistas.get("/cart/:cid", async(req, res) => {
   
 });
 
-routervistas.get("/register", auth2, (req, res) => {  
+routervistas.get("/register", (req, res) => {  
 
   //LE INDICO QUE RENDERICE LA VISTA REGISTER
   res.setHeader("Content-Type", "text/html");
   res.render("register");
 });
 
-routervistas.get("/login",auth2, (req, res) => {  
+routervistas.get("/login",(req, res) => {  
 
   //LE INDICO QUE RENDERICE LA VISTA LOGIN
   res.setHeader("Content-Type", "text/html");
   res.render("login");
 });
+
+//routervistas.get("/datos",passport.authenticate('jwt',{session:false}),(req, res)=>{
+  routervistas.get('/datos',passportCall('jwt'),(req,res)=>{
+  res.send(`Datos actualizados... hora actual: ${new Date().toUTCString()}`);
+});
+
+
 export { routervistas };

@@ -7,7 +7,11 @@ const userSchema=new Schema({
     email: {type: String, unique:true},
     password: String,
     age:Number,
-    role:String,
+    role: { 
+        required: true,
+        type: Schema.Types.ObjectId, 
+        ref: "roles" 
+      },
     github:Boolean,
     githubProfile: Object
 });
