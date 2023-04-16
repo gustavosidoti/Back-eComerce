@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import passport from 'passport';
+import { config } from '../config/config.js';
 
 export const creaHash = (password)=>{
   return bcrypt.hashSync(password,bcrypt.genSaltSync(10))
@@ -74,11 +75,11 @@ export async function lecturaArchivo(path) {
     }
   }
 
-  const SECRET = 'miPalabraSecreta';
+  
 
   // CREA JWT
   export const creaJWT = (usuario)=>{
-    return jwt.sign({usuario},SECRET,{expiresIn:'24h'});
+    return jwt.sign({usuario},config.SECRET,{expiresIn:'24h'});
   }
   
   // VALIDAR JWT
@@ -107,7 +108,7 @@ export async function lecturaArchivo(path) {
       }
   }
     // verifica si el token es valido
-    jwt.verify(token, SECRET, (error, credenciales)=>{
+    jwt.verify(token, config.SECRET, (error, credenciales)=>{
       if(error){
         res.sendStatus(401);
       }else{

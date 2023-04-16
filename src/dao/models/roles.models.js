@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 
-const rolesCollection='roles'
+const rolesColeccion='roles'
 const rolesEschema=new Schema({
     codigo: Number, nombre: String, descripcion: String
 },{
@@ -8,4 +8,4 @@ const rolesEschema=new Schema({
     collection: 'roles'
 })
 
-export const rolesModel=model(rolesCollection, rolesEschema)
+export const rolesModel=model(rolesColeccion, rolesEschema)

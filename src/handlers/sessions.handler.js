@@ -59,8 +59,9 @@ const userGitRegister = async(req, res) => {
 }
 
 const currentUser = async(req, res) => {
+    console.log(req.user.email);
     try {
-        let actualUser = await userModels.findOne({name:req.user.name})
+        let actualUser = await userModels.findOne({email: req.user.email})
                                     .populate('role');
         res.success2('Usuario Logueado', actualUser);
     } catch (error) {
@@ -83,6 +84,7 @@ const userLogin = async (req, res) => {
 
     if(!esClaveValida(password, userLogged )) return res.sendStatus(400);
 
+    
     let usuarioConRol={
         name:userLogged.name, 
         apellido:userLogged.lastName, 
@@ -90,16 +92,13 @@ const userLogin = async (req, res) => {
         age:userLogged.age,
         role:userLogged.role
     }
-   
-    let token=creaJWT(usuarioConRol);
+    console.log(usuarioConRol);
+    let token= await creaJWT(usuarioConRol);
 
-    // 2 horas de duración
-    //res.cookie('token',token,{maxAge:1000*60*120}).redirect('/');
     res.cookie('token',token,{maxAge:1000*60*120, httpOnly:true})
     .cookie('cookieConHttpOnly',token,{maxAge:1000*60*120, httpOnly:true})
     .cookie('cookieSinHttpOnly',token,{maxAge:1000*60*120})
     .success2('login ok', token);
-    
     } catch (error) {
         console.log(error);
         res.setHeader('Content-Type','application/json');

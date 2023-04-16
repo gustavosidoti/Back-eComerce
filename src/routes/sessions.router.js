@@ -1,9 +1,9 @@
-import { Mirouter } from "./router.js";
+import { MiRouter } from "./router.js";
 import { userLogin, userLogout, userRegister, userErrorLogin, userErrorRegister, currentUser, userGithub, userGitRegister } from "../handlers/sessions.handler.js";
 import passport from "passport";
 import jwt from 'jsonwebtoken';
 
-export class SessionsRouter extends Mirouter{
+export class SessionsRouter extends MiRouter{
     init(){ // como esta es una clase hija de Mirouter completamos el init acá
         //this.get('/github',passport.authenticate('github',{}), userGithub);
 

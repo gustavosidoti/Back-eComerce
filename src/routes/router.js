@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import passport from "passport";
 import { config } from '../config/config.js';
 
-export class Mirouter {
+export class MiRouter {
     
     constructor(){
         this.router = Router();
@@ -17,11 +17,12 @@ export class Mirouter {
     }
 
     get(path, permisos, ...funciones){
+        //this.router.get(path, passport.authenticate('jwt',{session: false}), this.misRespuestas, this.handlePolicies(permisos), this.applyCallbacks(funciones))
         this.router.get(path, passport.authenticate('jwt',{session: false}), this.misRespuestas, this.handlePolicies(permisos), this.applyCallbacks(funciones))
     }
 
     post(path, permisos, ...funciones){
-        this.router.post(path, passport.authenticate('jwt',{session: false}), this.misRespuestas, this.handlePolicies(permisos),this.applyCallbacks(funciones))
+        this.router.post(path, passport.authenticate('jwt',{session: false}), this.misRespuestas, this.handlePolicies(permisos), this.applyCallbacks(funciones))
     }
 
     applyCallbacks(callbacks){
@@ -29,7 +30,8 @@ export class Mirouter {
             try {
                 await callback.apply(this, params)
             } catch (error) {
-                params[1].status(500).send('internal error');
+                console.log(error);
+                params[1].status(500).send('internal errorrrrrrr');
             }
         })
     }
@@ -41,11 +43,11 @@ export class Mirouter {
         res.errorAutenticacion = (error)=>res.status(401).send({status:'error autenticación', error})
         res.errorAutorizacion = (error)=>res.status(403).send({status:'error autorizacion', error})
 
-        next()
+        next();
     }
 
     handlePolicies(arrayPermisos){
-        return(req, res, next)=>{
+        /*return(req, res, next)=>{
             if(arrayPermisos.includes('PUBLIC')) return next();
 
             let autHeader=req.headers.authorization;
@@ -63,6 +65,30 @@ export class Mirouter {
             if(!arrayPermisos.includes(usuario.role.toUpperCase())) return res.errorAutorizacion('No tiene privilegios suficientes para acceder al recurso')
             req.user=usuario;
             
+            next();
+        }
+        */
+        return(req, res, next)=>{
+            if(arrayPermisos.includes('PUBLIC')) return next();
+
+            let autHeader=req.headers.authorization;
+            if(!autHeader) return res.errorAutenticacion('No esta autenticado');
+            let token=autHeader.split(' ')[1]
+            let contenidoToken=jwt.verify(token,config.SECRET,(err,decoder)=>{
+                if(err){
+                    console.log("se prendio fuego aca");
+                    return false;
+                } 
+                console.log("se prendio fuego aca22");
+                return decoder
+            })
+            if(!contenidoToken) return res.errorAutenticacion('No esta autenticado');
+            
+            let usuario=contenidoToken.usuario
+
+            if(!arrayPermisos.includes(usuario.rol.toUpperCase())) return res.errorAutorizacion('No tiene privilegios suficientes para acceder al recurso')
+            req.user=usuario;
+            console.log(usuario);
             next();
         }
     }

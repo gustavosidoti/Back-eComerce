@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { MiRouter } from "../router.js";
 import { validarJWT, passportCall } from "../../utils/utils.js";
 import { messagesModel } from '../../dao/models/messages.models.js';
 import { productsModel } from '../../dao/models/products.models.js';
@@ -7,7 +7,50 @@ import { rolesModel } from '../../dao/models/roles.models.js';
 import passport  from "passport";
 
 
-const routervistas = Router();
+export class VistasRouter extends MiRouter {
+
+  init(){
+
+    //this.get('/',['PUBLIC'],passportCall('jwt'),async(req,res)=>{
+      this.get('/',['PUBLIC'],async(req,res)=>{
+      let productoDB;
+        let pageActual = req.query.pagina | 1;
+        let limitElements = req.query.limit | 5;
+        let sortElements = req.query.order | 0;
+    
+        productoDB = await productsModel.paginate({},{page: pageActual, limit: limitElements, sort:{price: sortElements}});
+    
+        let rolUsuario = await rolesModel.findOne({_id:req.user.role})
+    
+            let {totalPages, hasPrevPages, hasNextPage, prevPage, nextPage} = productoDB;
+    
+      res.setHeader("Content-Type", "text/html");
+      res.status(200).render("products", { 
+        productoDB, totalPages, hasPrevPages, hasNextPage, prevPage, nextPage,
+        nombreCompleto: req.user.name, rol: rolUsuario.nombre
+       });
+    });
+
+    this.get("/register",['PUBLIC'], (req, res) => {  
+
+      //LE INDICO QUE RENDERICE LA VISTA REGISTER
+      res.setHeader("Content-Type", "text/html");
+      res.render("register");
+    });
+    
+    
+    
+    //routervistas.get("/datos",passport.authenticate('jwt',{session:false}),(req, res)=>{
+      this.get('/datos',['PUBLIC'],(req,res)=>{
+      res.send(`Datos actualizados... hora actual: ${new Date().toUTCString()}`);
+    });
+
+
+
+  }
+
+
+}
 
 // MIDLEWARES
 
@@ -21,38 +64,7 @@ const autorizacion=(rol)=>{
   }
 }
 
-
-/*const auth=(req, res, next)=>{
-  if(!req.session.userLogged) return res.redirect('/login')    //return res.sendStatus(401);
-  next();
-}
-
-const auth2=(req, res, next)=>{
-  if(req.session.userLogged) return res.redirect('/')    //return res.sendStatus(401);
-  next();
-}*/
-
-//routervistas.get("/", passport.authenticate('jwt',{session:false}), async(req, res) => {
-  routervistas.get('/',passportCall('jwt'),async(req,res)=>{
-
-  let productoDB;
-    let pageActual = req.query.pagina | 1;
-    let limitElements = req.query.limit | 5;
-    let sortElements = req.query.order | 0;
-
-    productoDB = await productsModel.paginate({},{page: pageActual, limit: limitElements, sort:{price: sortElements}});
-
-    let rolUsuario = await rolesModel.findOne({_id:req.user.role})
-
-        let {totalPages, hasPrevPages, hasNextPage, prevPage, nextPage} = productoDB;
-
-  res.setHeader("Content-Type", "text/html");
-  res.status(200).render("products", { 
-    productoDB, totalPages, hasPrevPages, hasNextPage, prevPage, nextPage,
-    nombreCompleto: req.user.name, rol: rolUsuario.nombre
-   });
-});
-
+/*
 //cuando el cliente va a la ruta /realtimeproducts 
 routervistas.get("/realtimeproducts", (req, res) => {  
 
@@ -115,11 +127,12 @@ routervistas.post("/products/detailProduct", async(req, res) => {
 routervistas.post("/products/productAdded", async(req, res) => {  
 
   let {pid} = req.body; 
+  */
   /*console.log(pid);
 
   let productDB = await productsModel.findById(pid);
   //LE INDICO QUE RENDERICE LA VISTA REALTIMEPRODUCTS
-  */
+  
   res.setHeader("Content-Type", "text/html");
   res.send(pid);
 });
@@ -147,24 +160,6 @@ routervistas.get("/cart/:cid", async(req, res) => {
   
 });
 
-routervistas.get("/register", (req, res) => {  
-
-  //LE INDICO QUE RENDERICE LA VISTA REGISTER
-  res.setHeader("Content-Type", "text/html");
-  res.render("register");
-});
-
-routervistas.get("/login",(req, res) => {  
-
-  //LE INDICO QUE RENDERICE LA VISTA LOGIN
-  res.setHeader("Content-Type", "text/html");
-  res.render("login");
-});
-
-//routervistas.get("/datos",passport.authenticate('jwt',{session:false}),(req, res)=>{
-  routervistas.get('/datos',passportCall('jwt'),(req,res)=>{
-  res.send(`Datos actualizados... hora actual: ${new Date().toUTCString()}`);
-});
+*/
 
 
-export { routervistas };

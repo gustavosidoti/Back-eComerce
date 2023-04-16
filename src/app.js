@@ -11,16 +11,19 @@ import { inicializaEstrategias } from "./config/passport.js";
 import { routerCart } from "./routes/carts.router.js";
 import { routerProducts } from "./routes/products.router.js";
 import { SessionsRouter } from "./routes/sessions.router.js";
-import { routervistas } from "./routes/viewRoutes/vistasRoutes.js";
+import { VistasRouter } from './routes/viewRoutes/vistasRoutes.js';
+//import { routervistas } from "./routes/viewRoutes/vistasRoutes.js";
 import { lecturaArchivo,deleteProductSocket,addProductSocket } from "./utils/utils.js";
 import { messagesModel } from "./dao/models/messages.models.js";
 import { config } from './config/config.js';
+import { userLogin, userLogout, userRegister, userErrorLogin, userErrorRegister, currentUser, userGithub, userGitRegister } from "./handlers/sessions.handler.js";
 
 
-
+const PORT = config.PORT;
 
 const app = express();
-const PORT = config.PORT;
+const sessionRouter = new SessionsRouter();
+const vistasRouter = new VistasRouter();
 
 app.engine("handlebars", engine({
   runtimeOptions: {
@@ -30,25 +33,34 @@ app.engine("handlebars", engine({
 }));
 app.set("view engine", "handlebars");
 app.set("views", "./src/views");
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static("./src/public"));
 app.use(cookieParser());
-
-
 inicializaEstrategias();
 app.use(passport.initialize());
+
+
+//app.use(express.static("./src/public"));
 //app.use(passport.session());
 
 // RUTAS
-const sessionRouter = new SessionsRouter();
-app.use("/api/products", routerProducts);
-app.use("/api/carts", routerCart);
+//le indico que todo lo que vaya a / sea renderizado por el router de vistas que llama a la vista home para que muestre el contenido
+app.use("/", vistasRouter.getRouter());
+app.get("/login",(req, res) => {  
+    
+  //LE INDICO QUE RENDERICE LA VISTA LOGIN
+  res.setHeader("Content-Type", "text/html");
+  res.render("login");
+});
+app.post('/api/sessions/login', userLogin);
 app.use("/api/sessions", sessionRouter.getRouter());
 
 
-//le indico que todo lo que vaya a / sea renderizado por el router de vistas que llama a la vista home para que muestre el contenido
-app.use("/", routervistas);
+app.use("/api/products", routerProducts);
+app.use("/api/carts", routerCart);
+
+
 
 const serverhttp = app.listen(PORT, (err) => {
   if (err) {
@@ -81,8 +93,8 @@ const conectar = async() => {
 }
 
 conectar();
-
-
+serverhttp.on('error',(error)=>console.log(error));
+/*
 
 //exporto mi servidor websobket
 export const serverSocket = new Server(serverhttp);
@@ -123,4 +135,4 @@ serverSocket.on("connection", async (socket) => {
     
 
 });
-
+*/
