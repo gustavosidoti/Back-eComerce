@@ -124,14 +124,8 @@ export async function lecturaArchivo(path) {
         passport.authenticate(estrategia, (error, usuario, info)=>{
             if (error)return next(error);
             if(!usuario){
-                if(!info){
-                    return res.status(401).send('No autenticado');
-                }else{
-                  
-                    return res.status(401).send({error:info.messages?info.messages:info.toString()})
-                }
+                    return res.status(401).send({error:info.messages?info.messages:info.toString()})    
             }
-            
             req.user=usuario;
             next();
         })(req, res, next)

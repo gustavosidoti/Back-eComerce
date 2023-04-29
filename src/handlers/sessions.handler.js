@@ -1,6 +1,7 @@
 //import crypto from 'crypto';
 import { creaHash, creaJWT, esClaveValida } from '../utils/utils.js';
 import { userModels } from '../dao/models/user.models.js';
+import { MiRouter } from "../routes/router.js";
 
 
 const userRegister = async (req, res) => {
@@ -85,20 +86,23 @@ const userLogin = async (req, res) => {
     if(!esClaveValida(password, userLogged )) return res.sendStatus(400);
 
     
-    let usuarioConRol={
+    userLogged={
         name:userLogged.name, 
-        apellido:userLogged.lastName, 
+        lastName:userLogged.lastName, 
         email, 
         age:userLogged.age,
-        role:userLogged.role
+        role:userLogged.role.nombre
     }
-    console.log(usuarioConRol);
-    let token= await creaJWT(usuarioConRol);
+    console.log(userLogged);
+    let token= await creaJWT(userLogged);
+
+    let respuesta = new MiRouter();
 
     res.cookie('token',token,{maxAge:1000*60*120, httpOnly:true})
     .cookie('cookieConHttpOnly',token,{maxAge:1000*60*120, httpOnly:true})
-    .cookie('cookieSinHttpOnly',token,{maxAge:1000*60*120})
-    .success2('login ok', token);
+    .cookie('cookieSinHttpOnly',token,{maxAge:1000*60*120}).success2('Login OK',token)
+    
+    
     } catch (error) {
         console.log(error);
         res.setHeader('Content-Type','application/json');

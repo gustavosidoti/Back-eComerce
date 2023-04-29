@@ -20,7 +20,7 @@ export class VistasRouter extends MiRouter {
     
         productoDB = await productsModel.paginate({},{page: pageActual, limit: limitElements, sort:{price: sortElements}});
     
-        let rolUsuario = await rolesModel.findOne({_id:req.user.role})
+        let rolUsuario = await rolesModel.findOne({nombre:req.user.role})
     
             let {totalPages, hasPrevPages, hasNextPage, prevPage, nextPage} = productoDB;
     
@@ -31,6 +31,13 @@ export class VistasRouter extends MiRouter {
        });
     });
 
+    this.get("/login",['PUBLIC'],(req, res) => {  
+    
+      //LE INDICO QUE RENDERICE LA VISTA LOGIN
+      res.setHeader("Content-Type", "text/html");
+      res.render("login");
+    });
+    
     this.get("/register",['PUBLIC'], (req, res) => {  
 
       //LE INDICO QUE RENDERICE LA VISTA REGISTER
@@ -41,7 +48,7 @@ export class VistasRouter extends MiRouter {
     
     
     //routervistas.get("/datos",passport.authenticate('jwt',{session:false}),(req, res)=>{
-      this.get('/datos',['PUBLIC'],(req,res)=>{
+      this.get('/datos',['ADMIN'],(req,res)=>{
       res.send(`Datos actualizados... hora actual: ${new Date().toUTCString()}`);
     });
 

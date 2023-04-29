@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import paginate from "mongoose-paginate-v2";
 
 const usersCollection ='users';
 const userSchema=new Schema({
@@ -14,6 +15,18 @@ const userSchema=new Schema({
       },
     github:Boolean,
     githubProfile: Object
+},{
+  timestamps: true
 });
+
+userSchema.plugin(paginate);
+
+userSchema.pre('find',function(){
+  this.populate('role');
+})
+
+userSchema.pre('findOne',function(){
+  this.populate('role');
+})
 
 export const userModels=model(usersCollection, userSchema);

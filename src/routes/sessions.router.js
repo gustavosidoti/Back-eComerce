@@ -18,6 +18,7 @@ export class SessionsRouter extends MiRouter{
 
         //routerSessions.post('/login',passport.authenticate('login',{failureRedirect:'/api/sessions/errorLogin'}), userLogin);
         this.post('/login', ['PUBLIC'], userLogin);
+    
 
         this.get('/logout', ['PUBLIC'], userLogout);
 

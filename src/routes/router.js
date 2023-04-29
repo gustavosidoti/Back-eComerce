@@ -18,11 +18,11 @@ export class MiRouter {
 
     get(path, permisos, ...funciones){
         //this.router.get(path, passport.authenticate('jwt',{session: false}), this.misRespuestas, this.handlePolicies(permisos), this.applyCallbacks(funciones))
-        this.router.get(path, passport.authenticate('jwt',{session: false}), this.misRespuestas, this.handlePolicies(permisos), this.applyCallbacks(funciones))
+        this.router.get(path, (path === '/login')?[]:passport.authenticate('jwt',{session: false}), this.misRespuestas, this.handlePolicies(permisos), this.applyCallbacks(funciones))
     }
 
     post(path, permisos, ...funciones){
-        this.router.post(path, passport.authenticate('jwt',{session: false}), this.misRespuestas, this.handlePolicies(permisos), this.applyCallbacks(funciones))
+        this.router.post(path, (path === '/login')?[]:passport.authenticate('jwt',{session: false}), this.misRespuestas, this.handlePolicies(permisos), this.applyCallbacks(funciones))
     }
 
     applyCallbacks(callbacks){
@@ -70,7 +70,7 @@ export class MiRouter {
         */
         return(req, res, next)=>{
             if(arrayPermisos.includes('PUBLIC')) return next();
-
+            /*
             let autHeader=req.headers.authorization;
             if(!autHeader) return res.errorAutenticacion('No esta autenticado');
             let token=autHeader.split(' ')[1]
@@ -85,10 +85,12 @@ export class MiRouter {
             if(!contenidoToken) return res.errorAutenticacion('No esta autenticado');
             
             let usuario=contenidoToken.usuario
+            */
+           let usuario = req.user;
 
-            if(!arrayPermisos.includes(usuario.rol.toUpperCase())) return res.errorAutorizacion('No tiene privilegios suficientes para acceder al recurso')
-            req.user=usuario;
-            console.log(usuario);
+            if(!arrayPermisos.includes(usuario.role.toUpperCase())) return res.errorAutorizacion('No tiene privilegios suficientes para acceder al recurso')
+            //req.user=usuario;
+            console.log("salta en los roles",usuario);
             next();
         }
     }

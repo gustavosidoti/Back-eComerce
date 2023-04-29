@@ -47,13 +47,14 @@ app.use(passport.initialize());
 // RUTAS
 //le indico que todo lo que vaya a / sea renderizado por el router de vistas que llama a la vista home para que muestre el contenido
 app.use("/", vistasRouter.getRouter());
-app.get("/login",(req, res) => {  
+/*app.get("/login",(req, res) => {  
     
   //LE INDICO QUE RENDERICE LA VISTA LOGIN
   res.setHeader("Content-Type", "text/html");
   res.render("login");
 });
-app.post('/api/sessions/login', userLogin);
+*/
+//app.post('/api/sessions/login', userLogin);
 app.use("/api/sessions", sessionRouter.getRouter());
 
 
