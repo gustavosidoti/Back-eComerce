@@ -42,7 +42,7 @@ export const inicializaEstrategias=()=>{
     passport.use('jwt',new passportJWT.Strategy(
         {
             jwtFromRequest: passportJWT.ExtractJwt.fromExtractors([extraerToken]),
-            secretOrKey: config.SECRET
+            secretOrKey: config.app.SECRET
         },
         (contenidoToken, done)=>{
             try {

@@ -1,20 +1,23 @@
-import { Router } from "express";
-const routerCart = Router();
+import { MiRouter } from "./router.js";
 
-import { getCartsByCid, addCart, addProductInCart, deleteProductInCart, deleteAllProductsInCart, addProductQuantityInCart, updateCart } from '../handlers/carts.handler.js';
+import { getCartsByCid, addCart, addProductInCart, deleteProductInCart, deleteAllProductsInCart, addProductQuantityInCart, updateCart, purchaseByCid } from '../handlers/carts.handler.js';
 
-routerCart.get('/:cid', getCartsByCid);
+export class CartsRouter extends MiRouter {
+    init(){
+        this.get('/:cid',['PUBLIC'], getCartsByCid);
 
-routerCart.post('/', addCart);
+        this.post('/',['PUBLIC'], addCart);
 
-routerCart.post('/:cid/product/:pid', addProductInCart);
+        this.post('/:cid/product/:pid',['USUARIO'], addProductInCart);
 
-routerCart.put('/:cid/product/:pid', addProductQuantityInCart);
+        this.post('/:cid/purchase',['USUARIO'], purchaseByCid);
 
-routerCart.put('/:cid', updateCart);
+        this.put('/:cid/product/:pid',['USUARIO'], addProductQuantityInCart);
 
-routerCart.delete('/:cid/product/:pid', deleteProductInCart);
+        this.put('/:cid',['PUBLIC'], updateCart);
 
-routerCart.delete('/:cid', deleteAllProductsInCart);
+        this.delete('/:cid/product/:pid',['PUBLIC'], deleteProductInCart);
 
-export {routerCart};
+        this.delete('/:cid',['PUBLIC'], deleteAllProductsInCart);
+    }
+}

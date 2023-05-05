@@ -1,7 +1,7 @@
 //import crypto from 'crypto';
 import { creaHash, creaJWT, esClaveValida } from '../utils/utils.js';
-import { userModels } from '../dao/models/user.models.js';
-import { MiRouter } from "../routes/router.js";
+import MisRespuestas from '../utils/customResponses.js';
+import { userService } from "../services/index.js";
 
 
 const userRegister = async (req, res) => {
@@ -12,40 +12,35 @@ const userRegister = async (req, res) => {
     try {
         
             if(!email || !password) {
-                return res.status(404).json({
-                    ok: false,
-                    msg: `missed any value`
-                });
+                return MisRespuestas.errorCliente(res,error)
             }
-        let actualUser= await userModels.findOne({email:email})
+        //let actualUser= await userModels.findOne({email:email})
+        let actualUser= await userService.obtenerUsuarioPorEmail({email:email})
         
         if(actualUser) {
-            return res.status(404).json({
-                ok: false,
-                msg: `the user ${email} already exist`
-            });
+            return MisRespuestas.errorCliente(res,error)
         }
         if(email === 'adminCoder@coder.com' || email === 'gustavosidoti@gmail.com' ){
             role = '643a9a28c3cfc38957a37998'; // ADMIN
         }else{
-            role = '643a9b1fc3cfc38957a37999';
+            role = '643a9b1fc3cfc38957a37999'; // USUARIO
         }
         
-        userModels.create({
+       
+        const userToCreate = {
             name, lastName, email, 
             password: creaHash(password),
             age,
             role
-        })
+        }
+
+        const userCreated = await userService.grabaUsuario(userToCreate);
         
-        res.redirect('/login');
+        MisRespuestas.respuestaExitosa(res,userCreated);
     
         } catch (error) {
             console.log(error);
-            res.setHeader('Content-Type','application/json');
-            res.status(500).json({
-                msg: "Cannot connect with database"
-            });
+            MisRespuestas.errorServer(res, error);
         }
 }
 
@@ -60,14 +55,13 @@ const userGitRegister = async(req, res) => {
 }
 
 const currentUser = async(req, res) => {
-    console.log(req.user.email);
+    
     try {
-        let actualUser = await userModels.findOne({email: req.user.email})
-                                    .populate('role');
-        res.success2('Usuario Logueado', actualUser);
+        let actualUser = await userService.obtenerUsuarioFiltrado({email: req.user.email})
+                                
+        MisRespuestas.respuestaExitosa(res,actualUser);
     } catch (error) {
-        console.log(error);
-        res.errorCliente(error);
+        MisRespuestas.errorServer(res, error);
     }
  
 }
@@ -77,13 +71,13 @@ const userLogin = async (req, res) => {
    let {email,password} = req.body;
    try {
         
-    if(!email || !password) return res.sendStatus(400);
+    if(!email || !password) return MisRespuestas.errorCliente(res,error);
 
-    let userLogged= await userModels.findOne({email:email});
+    let userLogged= await userService.obtenerUsuarioPorEmail({email:email});
     
-    if(!userLogged) return res.sendStatus(400);
+    if(!userLogged) return MisRespuestas.errorCliente(res,error);
 
-    if(!esClaveValida(password, userLogged )) return res.sendStatus(400);
+    if(!esClaveValida(password, userLogged )) return MisRespuestas.errorCliente(res,error);
 
     
     userLogged={
@@ -96,19 +90,18 @@ const userLogin = async (req, res) => {
     console.log(userLogged);
     let token= await creaJWT(userLogged);
 
-    let respuesta = new MiRouter();
 
     res.cookie('token',token,{maxAge:1000*60*120, httpOnly:true})
     .cookie('cookieConHttpOnly',token,{maxAge:1000*60*120, httpOnly:true})
-    .cookie('cookieSinHttpOnly',token,{maxAge:1000*60*120}).success2('Login OK',token)
+    .cookie('cookieSinHttpOnly',token,{maxAge:1000*60*120})
+    
+    MisRespuestas.respuestaExitosa(res,token);
+    //.cookie('cookieSinHttpOnly',token,{maxAge:1000*60*120}).success2('Login OK',token)
     
     
     } catch (error) {
         console.log(error);
-        res.setHeader('Content-Type','application/json');
-        res.status(500).json({
-            msg: "Cannot connect with database"
-        });
+        MisRespuestas.errorServer(res, error);
     }
 
    

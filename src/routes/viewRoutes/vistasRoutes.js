@@ -1,10 +1,9 @@
 import { MiRouter } from "../router.js";
-import { validarJWT, passportCall } from "../../utils/utils.js";
-import { messagesModel } from '../../dao/models/messages.models.js';
 import { productsModel } from '../../dao/models/products.models.js';
 import { cartsModel } from '../../dao/models/carts.models.js';
 import { rolesModel } from '../../dao/models/roles.models.js';
-import passport  from "passport";
+import { messageService } from "../../services/index.js";
+
 
 
 export class VistasRouter extends MiRouter {
@@ -14,9 +13,9 @@ export class VistasRouter extends MiRouter {
     //this.get('/',['PUBLIC'],passportCall('jwt'),async(req,res)=>{
       this.get('/',['PUBLIC'],async(req,res)=>{
       let productoDB;
-        let pageActual = req.query.pagina | 1;
-        let limitElements = req.query.limit | 5;
-        let sortElements = req.query.order | 0;
+        let pageActual = req.query.page || 1;
+        let limitElements = req.query.limit || 5;
+        let sortElements = req.query.order || 0;
     
         productoDB = await productsModel.paginate({},{page: pageActual, limit: limitElements, sort:{price: sortElements}});
     
@@ -52,11 +51,12 @@ export class VistasRouter extends MiRouter {
       res.send(`Datos actualizados... hora actual: ${new Date().toUTCString()}`);
     });
 
+      this.get("/chat",['USUARIO'], async (req, res) => {  
 
-
+      let messages = await messageService.getMessage();
+      res.render("chat", { messages });    
+    });
   }
-
-
 }
 
 // MIDLEWARES

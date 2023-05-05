@@ -43,12 +43,12 @@ Bienvenido: {{nombreCompleto}} || Rol: {{rol}} || <a href="/api/sessions/logout"
     </tbody>
 </table>
 
-<a href="/products?pagina=1">Primer Página</a>
+<a href="/?page=1">Primer Página</a>
 {{#if prevPage}}
-    <a href="/products?pagina={{prevPage}}">Pág Anterior</a>
+    <a href="/?page={{prevPage}}">Pág Anterior</a>
 {{/if}}
-<a href="/products?pagina={{nextPage}}">Pág Siguiente</a>
-<a href="/products?pagina={{totalPages}}">Ultima Pagina</a>
+<a href="/?page={{nextPage}}">Pág Siguiente</a>
+<a href="/?page={{totalPages}}">Ultima Pagina</a>
 
 <script>
     let datos=document.getElementById('datos');

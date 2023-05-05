@@ -11,7 +11,8 @@ const cartSchema = new Schema({
             ref: "products" 
           },
           quantity: Number
-    }]
+    }],
+    user: String
 });
 
 

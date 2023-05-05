@@ -8,22 +8,25 @@ import cookieParser from 'cookie-parser';
 import passport from "passport";
 import { inicializaEstrategias } from "./config/passport.js";
 
-import { routerCart } from "./routes/carts.router.js";
-import { routerProducts } from "./routes/products.router.js";
+import { CartsRouter } from "./routes/carts.router.js";
+import { ProductsRouter } from "./routes/products.router.js";
 import { SessionsRouter } from "./routes/sessions.router.js";
 import { VistasRouter } from './routes/viewRoutes/vistasRoutes.js';
-//import { routervistas } from "./routes/viewRoutes/vistasRoutes.js";
 import { lecturaArchivo,deleteProductSocket,addProductSocket } from "./utils/utils.js";
-import { messagesModel } from "./dao/models/messages.models.js";
+//import { messagesModel } from "./dao/models/messages.models.js";
 import { config } from './config/config.js';
-import { userLogin, userLogout, userRegister, userErrorLogin, userErrorRegister, currentUser, userGithub, userGitRegister } from "./handlers/sessions.handler.js";
+import { messageService } from "./services/index.js";
 
 
-const PORT = config.PORT;
+
+
+const PORT = config.app.PORT;
 
 const app = express();
 const sessionRouter = new SessionsRouter();
 const vistasRouter = new VistasRouter();
+const productsRouter = new ProductsRouter();
+const cartRouter = new CartsRouter();
 
 app.engine("handlebars", engine({
   runtimeOptions: {
@@ -41,7 +44,7 @@ inicializaEstrategias();
 app.use(passport.initialize());
 
 
-//app.use(express.static("./src/public"));
+app.use(express.static("./src/public"));
 //app.use(passport.session());
 
 // RUTAS
@@ -56,10 +59,8 @@ app.use("/", vistasRouter.getRouter());
 */
 //app.post('/api/sessions/login', userLogin);
 app.use("/api/sessions", sessionRouter.getRouter());
-
-
-app.use("/api/products", routerProducts);
-app.use("/api/carts", routerCart);
+app.use("/api/products", productsRouter.getRouter());
+app.use("/api/carts", cartRouter.getRouter());
 
 
 
@@ -72,19 +73,11 @@ const serverhttp = app.listen(PORT, (err) => {
 });
 
 // Conexion a la BD
+/*
 const conectar = async() => {
   try {
-    await mongoose.connect(config.MONGOURL);
+    await mongoose.connect(config.database.MONGOURL);
     console.log('DB online');
-
-        /*await productsModel.deleteMany({});
-        let resultado=await productsModel.create(
-          productsDB
-         )
-         console.log(resultado)
-
-         await cartsModel.deleteMany({});
-        */
 
   } catch (error) {
     console.log(`Fallo la conexión a la BD ${error}`);
@@ -94,8 +87,9 @@ const conectar = async() => {
 }
 
 conectar();
+*/
 serverhttp.on('error',(error)=>console.log(error));
-/*
+
 
 //exporto mi servidor websobket
 export const serverSocket = new Server(serverhttp);
@@ -130,10 +124,11 @@ serverSocket.on("connection", async (socket) => {
    // Mensajes del chat
 
    socket.on("newMessage", async ({ user, message }) => {
-    await messagesModel.create({ user: user, message: message });
+    await messageService.saveMessage({ user: user, message: message });
     serverSocket.emit("messagesListUpdated");
   })
     
 
 });
-*/
+
+

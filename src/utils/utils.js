@@ -79,7 +79,7 @@ export async function lecturaArchivo(path) {
 
   // CREA JWT
   export const creaJWT = (usuario)=>{
-    return jwt.sign({usuario},config.SECRET,{expiresIn:'24h'});
+    return jwt.sign({usuario},config.app.SECRET,{expiresIn:'24h'});
   }
   
   // VALIDAR JWT

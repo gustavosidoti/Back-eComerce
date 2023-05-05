@@ -1,21 +1,19 @@
-import { Router } from "express";
-const routerProducts = Router();
-
+import { MiRouter } from "./router.js";
 
 import { getProducts, getProductByPid, addProduct, updateProduct, deleteProduct } from '../handlers/products.handler.js';
 
+export class ProductsRouter extends MiRouter{
+    init(){
 
-routerProducts.get('/', getProducts);
+        this.get('/', ['PUBLIC'], getProducts);
 
-routerProducts.get('/:pid', getProductByPid);
+        this.get('/:pid', ['PUBLIC'], getProductByPid);
 
-routerProducts.put('/:pid', updateProduct);
+        this.put('/:pid', ['ADMIN'], updateProduct);
 
-routerProducts.delete('/:pid', deleteProduct);
+        this.delete('/:pid', ['ADMIN'], deleteProduct);
 
-routerProducts.post('/', addProduct);
+        this.post('/', ['ADMIN'], addProduct);
 
-    
-
-// exports
-export {routerProducts};
+    }
+}

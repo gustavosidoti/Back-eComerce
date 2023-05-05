@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import mongoosePaginate from "mongoose-paginate-v2";
+import paginate from "mongoose-paginate-v2";
 
 const productsCollection = 'products';
 
@@ -11,7 +11,7 @@ const productSchema = new Schema({
     },
     description: String,
     code: {
-        type: String,
+        type: Number,
         required: [true, "El código es requerdido"],
         unique: [true, "El código no debe repetirse"]
     },
@@ -28,10 +28,11 @@ const productSchema = new Schema({
         type: String,
         required: [true, "La categoría es requerdida"]
     },
-    thumnails: Array
+    thumnails: Array,
+    
 });
 
-productSchema.plugin(mongoosePaginate);
+productSchema.plugin(paginate);
 
 productSchema.method('toJSON', function() {
 

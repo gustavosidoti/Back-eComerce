@@ -14,7 +14,8 @@ const userSchema=new Schema({
         ref: "roles" 
       },
     github:Boolean,
-    githubProfile: Object
+    githubProfile: Object,
+    active:Boolean
 },{
   timestamps: true
 });

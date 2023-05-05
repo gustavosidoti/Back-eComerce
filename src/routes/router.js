@@ -18,11 +18,19 @@ export class MiRouter {
 
     get(path, permisos, ...funciones){
         //this.router.get(path, passport.authenticate('jwt',{session: false}), this.misRespuestas, this.handlePolicies(permisos), this.applyCallbacks(funciones))
-        this.router.get(path, (path === '/login')?[]:passport.authenticate('jwt',{session: false}), this.misRespuestas, this.handlePolicies(permisos), this.applyCallbacks(funciones))
+        this.router.get(path, (path === '/login' || path === '/register')?[]:passport.authenticate('jwt',{session: false}), this.misRespuestas, this.handlePolicies(permisos), this.applyCallbacks(funciones))
     }
 
     post(path, permisos, ...funciones){
-        this.router.post(path, (path === '/login')?[]:passport.authenticate('jwt',{session: false}), this.misRespuestas, this.handlePolicies(permisos), this.applyCallbacks(funciones))
+        this.router.post(path, (path === '/login' || path === '/register')?[]:passport.authenticate('jwt',{session: false}), this.misRespuestas, this.handlePolicies(permisos), this.applyCallbacks(funciones))
+    }
+
+    put(path, permisos, ...funciones){
+        this.router.put(path, passport.authenticate('jwt',{session: false}), this.misRespuestas, this.handlePolicies(permisos), this.applyCallbacks(funciones))
+    }
+
+    delete(path, permisos, ...funciones){
+        this.router.delete(path, passport.authenticate('jwt',{session: false}), this.misRespuestas, this.handlePolicies(permisos), this.applyCallbacks(funciones))
     }
 
     applyCallbacks(callbacks){
@@ -47,50 +55,14 @@ export class MiRouter {
     }
 
     handlePolicies(arrayPermisos){
-        /*return(req, res, next)=>{
-            if(arrayPermisos.includes('PUBLIC')) return next();
-
-            let autHeader=req.headers.authorization;
-            if(!autHeader) return res.errorAutenticacion('No esta autenticado');
-            let token=autHeader.split(' ')[1]
-            let contenidoToken=jwt.verify(token,config.SECRET,(err,decoder)=>{
-                console.log('error');
-                if(err) return false;
-                return decoder
-            })
-            if(!contenidoToken) return res.errorAutenticacion('No esta autenticado');
-            
-            let usuario=contenidoToken.usuario
-            console.log(usuario);
-            if(!arrayPermisos.includes(usuario.role.toUpperCase())) return res.errorAutorizacion('No tiene privilegios suficientes para acceder al recurso')
-            req.user=usuario;
-            
-            next();
-        }
-        */
+        
         return(req, res, next)=>{
             if(arrayPermisos.includes('PUBLIC')) return next();
-            /*
-            let autHeader=req.headers.authorization;
-            if(!autHeader) return res.errorAutenticacion('No esta autenticado');
-            let token=autHeader.split(' ')[1]
-            let contenidoToken=jwt.verify(token,config.SECRET,(err,decoder)=>{
-                if(err){
-                    console.log("se prendio fuego aca");
-                    return false;
-                } 
-                console.log("se prendio fuego aca22");
-                return decoder
-            })
-            if(!contenidoToken) return res.errorAutenticacion('No esta autenticado');
             
-            let usuario=contenidoToken.usuario
-            */
            let usuario = req.user;
-
+            
             if(!arrayPermisos.includes(usuario.role.toUpperCase())) return res.errorAutorizacion('No tiene privilegios suficientes para acceder al recurso')
-            //req.user=usuario;
-            console.log("salta en los roles",usuario);
+            
             next();
         }
     }

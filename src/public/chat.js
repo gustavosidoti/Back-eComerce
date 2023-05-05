@@ -1,7 +1,11 @@
-let socket = io();
 
-let user = JSON.parse(sessionStorage.getItem("user")) || prompt("Ingrese correo electrónico:");
-sessionStorage.setItem("user", JSON.stringify(user));
+let socket = io();
+let user="";
+//let user = JSON.parse(sessionStorage.getItem("user")) || prompt("Ingrese correo electrónico:");
+fetch('/api/sessions/current')
+.then(response => response.json())
+.then(data => user=data.dato.email);
+
 
 let sendMessageForm = document.getElementById("sendMessage");
 
